@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Noto';
+  src: url('../assets/fonts/Noto/NotoSerif-Light.ttf') format('truetype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../assets/fonts/Inter/Inter_18pt-Light.ttf') format('truetype');
+  font-style: normal;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --main-color: #F9C52B;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: "Inter", sans-serif;
+  user-select: none;
+}
+
+.loader {
+  aspect-ratio: 2/3;
+  --c:no-repeat linear-gradient(#F9C52B 0 0);
+  background: var(--c), var(--c), var(--c), var(--c);
+  background-size: 50% 33.4%;
+  animation: l8 1s infinite linear;
+}
+@keyframes l8 {
+  0%,
+  5%   {background-position:0 25%,100% 25%,0 75%,100% 75%}
+  33%  {background-position:0 50%,100% 0,0 100%,100% 50%}
+  66%  {background-position:0 50%,0 0,100% 100%,100% 50%}
+  95%,
+  100% {background-position:0 75%,0 25%,100% 75%,100% 25%}
+}
