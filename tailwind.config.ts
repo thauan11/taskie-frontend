@@ -23,10 +23,25 @@ export default {
           '50%': { transform: 'translateX(10px)' },
           '75%': { transform: 'translateX(-10px)' },
           '100%': { transform: 'translateX(0px)' },
+        },
+        opacity: {
+          '0%': { opacity: "0" },
+          '100%': { opacity: "100" },
+        },
+        dropdown: {
+          '0%': { transform: 'translateY(-99vh)' },
+          '100%': { transform: 'translateY(0px)' },
+        },
+        sideRight: {
+          '0%': { maxWidth: '0px' },
+          '100%': { maxWidth: '100%' },
         }
       },
       animation: {
         pop: 'pop .5s linear',
+        opacity: 'opacity .1s linear',
+        dropdown: 'dropdown .5s linear',
+        sideRight: 'sideRight .5s linear',
       },
       fontFamily: {
         noto: ["Noto", "serif"],

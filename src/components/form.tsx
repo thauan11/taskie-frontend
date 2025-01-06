@@ -52,24 +52,21 @@ export function Form() {
           setErrorMessage("Name is required.");
         }, 10);
         setIsLoading(false);
-        focusInput("name");
-        return
+        return focusInput("name");
       }
       if (email === "") {
         setTimeout(() => {
           setErrorMessage("Email is required.");
         }, 10);
         setIsLoading(false);
-        focusInput("email");
-        return
+        return focusInput("email");
       }
       if (password === "") {
         setTimeout(() => {
           setErrorMessage("Password is required.");
         }, 10);
         setIsLoading(false);
-        focusInput("password");
-        return
+        return focusInput("password");
       }
 
       const data = {
@@ -89,27 +86,29 @@ export function Form() {
           credentials: 'include',
         });
   
-        if (response.ok) {
-          setIsRegister(false);
-          clearInputs();
-          router.push("/tasks");
-
-        } else {
+        if (!response.ok) {
           const errorData = await response.json();
           console.log(errorData);
           setErrorMessage(errorData.error);
+          setIsLoading(false);
         }
+
+        setIsRegister(false);
+        clearInputs();
+        // router.push("/tasks");
+        return
 
       } catch (error) {
         console.error(error);
         setErrorMessage("An error occurred. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
 
     } else {
       if (email === "" || password === "") {
         setErrorMessage("Please enter your email and password.");
-        setIsLoading(false);
-        return
+        return setIsLoading(false);
       }
   
       const data = {
@@ -139,10 +138,9 @@ export function Form() {
       } catch (error) {
         console.error(error);
         setErrorMessage("An error occurred. Please try again.");
+        setIsLoading(false);
       }
     }
-    
-    setIsLoading(false);
   }
 
   return (
@@ -155,7 +153,7 @@ export function Form() {
             name="name"
             autoComplete="off"
             placeholder="Name"
-            className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main"
+            className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={isLoading}
@@ -178,7 +176,7 @@ export function Form() {
           name="email"
           autoComplete="off"
           placeholder="Email"
-          className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main"
+          className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading}
@@ -199,7 +197,7 @@ export function Form() {
           id="password"
           name="password"
           placeholder="Password"
-          className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main"
+          className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={isLoading}
@@ -248,7 +246,7 @@ export function Form() {
         </div>
       }
 
-      <div className={isRegister ? "relative flex justify-between items-center pt-1" : "relative flex justify-between items-center pt-1 pb-3"}>
+      <div className="flex justify-between items-center pt-1">
         {!isRegister && 
           <div className="flex items-center gap-2">
             <input
@@ -258,6 +256,7 @@ export function Form() {
               className="appearance-none w-4 h-4 rounded bg-white bg-opacity-20 cursor-pointer checked:bg-main transition-all"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={isLoading}
             />
             
             <label
