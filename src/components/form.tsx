@@ -47,110 +47,113 @@ export function Form() {
     }, 100);
   }
 
+  const handleLogin = async () => {
+    if (email === "" || password === "") {
+      setErrorMessage("Please enter your email and password.");
+      return setIsLoading(false);
+    }
+
+    const data = {
+      email: email.toLocaleLowerCase(),
+      password,
+      rememberMe,
+    }
+
+    try {
+      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-in`;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        console.error('Login error:', response.status);
+        setErrorMessage("Invalid email or password.");
+        setIsLoading(false);
+      }
+      
+      router.push("/tasks");
+
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("An error occurred. Please try again.");
+      setIsLoading(false);
+    }
+  }
+
+  const handleRegister = async () => {
+    if (!name) {
+      setTimeout(() => {
+        setErrorMessage("Name is required.");
+      }, 10);
+      setIsLoading(false);
+      return focusInput("name");
+    }
+
+    if (!email) {
+      setTimeout(() => {
+        setErrorMessage("Email is required.");
+      }, 10);
+      setIsLoading(false);
+      return focusInput("email");
+    }
+    
+    if (!password) {
+      setTimeout(() => {
+        setErrorMessage("Password is required.");
+      }, 10);
+      setIsLoading(false);
+      return focusInput("password");
+    }
+
+    const data = {
+      name: capitalizeWords(name),
+      email: email.toLocaleLowerCase(),
+      password,
+    }
+
+    try {
+      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-up`;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(errorData);
+        setErrorMessage(errorData.error);
+        return setIsLoading(false);
+      }
+
+      handleLogin();
+      // setIsRegister(false);
+      // clearInputs();
+
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("An error occurred. Please try again.");
+      return setIsLoading(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
-
     setErrorMessage("");
 
     if (isRegister) {
-      if (name === "") {
-        setTimeout(() => {
-          setErrorMessage("Name is required.");
-        }, 10);
-        setIsLoading(false);
-        return focusInput("name");
-      }
-
-      if (email === "") {
-        setTimeout(() => {
-          setErrorMessage("Email is required.");
-        }, 10);
-        setIsLoading(false);
-        return focusInput("email");
-      }
-      
-      if (password === "") {
-        setTimeout(() => {
-          setErrorMessage("Password is required.");
-        }, 10);
-        setIsLoading(false);
-        return focusInput("password");
-      }
-
-      const data = {
-        name: capitalizeWords(name),
-        email: email.toLocaleLowerCase(),
-        password,
-      }
-  
-      try {
-        const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-up`;
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-          credentials: 'include',
-        });
-  
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.log(errorData);
-          setErrorMessage(errorData.error);
-          setIsLoading(false);
-        }
-
-        setIsRegister(false);
-        clearInputs();
-        // router.push("/tasks");
-        return
-
-      } catch (error) {
-        console.error(error);
-        setErrorMessage("An error occurred. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-
+      handleRegister();
     } else {
-      if (email === "" || password === "") {
-        setErrorMessage("Please enter your email and password.");
-        return setIsLoading(false);
-      }
-  
-      const data = {
-        email: email.toLocaleLowerCase(),
-        password,
-        rememberMe,
-      }
-  
-      try {
-        const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-in`;
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-          credentials: 'include',
-        });
-  
-        if (!response.ok) {
-          console.error('Login error:', response.status);
-          setErrorMessage("Invalid email or password.");
-          setIsLoading(false);
-        }
-        
-        setErrorMessage("");
-        router.push("/tasks");
-
-      } catch (error) {
-        console.error(error);
-        setErrorMessage("An error occurred. Please try again.");
-        setIsLoading(false);
-      }
+      handleLogin();
     }
   }
 
@@ -245,7 +248,7 @@ export function Form() {
       </div>
 
       {errorMessage && 
-        <div className="flex flex-row justify-center gap-1 text-red-500 fill-red-500 text-xs my-1 animate-pop">
+        <div className="flex flex-row justify-center gap-1 text-red-500 fill-red-500 text-xs my-1 animate-shake">
           <div className="relative pl-6">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-5 absolute left-0 top-0">
               <title>Warning</title>
@@ -258,7 +261,7 @@ export function Form() {
       }
 
       <div className="flex justify-between items-center pt-1">
-        {!isRegister && 
+        {/* {!isRegister &&  */}
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -277,18 +280,18 @@ export function Form() {
               Remember me (30d)
             </label>
           </div>
-        }
+        {/* } */}
 
-        { !isRegister &&
+        {/* { !isRegister &&
           <button
             type="button"
             className="text-xs hover:underline"
             onClick={() => {alert("TODO")}}
           >
-            {/* { isRegister ? "Return to sign in" : "New to Takies?" } */}
+            {/* { isRegister ? "Return to sign in" : "New to Takies?" }
             Forgot password?
           </button>
-        }
+        } */}
       </div>
 
       <button

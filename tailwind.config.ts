@@ -18,33 +18,46 @@ export default {
         loginLight: 'rgba(255, 255, 255, 0.1) 0px 0px 28px',
       },
       keyframes: {
-        pop: {
-          '25%': { transform: 'translateX(-10px)' },
-          '50%': { transform: 'translateX(10px)' },
-          '75%': { transform: 'translateX(-10px)' },
-          '100%': { transform: 'translateX(0px)' },
+        loading: {
+          // '0%':,
+          '5%': { backgroundPosition: '0 25%,100% 25%,0 75%,100% 75%' },
+          '33%': { backgroundPosition: '0 50%,100% 0,0 100%,100% 50%' },
+          '66%': { backgroundPosition: '0 50%,0 0,100% 100%,100% 50%'},
+          // '95%':,
+          '100%': { backgroundPosition: '0 75%,0 25%,100% 75%,100% 25%' }
         },
-        opacity: {
-          '0%': { opacity: "0" },
-          '100%': { opacity: "100" },
+        shake: {
+          '0%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translate(5px)' },
+          '50%': { transform: 'translateX(-5px)' },
+          '75%': { transform: 'translateX(5px)' },
+          '100%': { transform: 'translateX(0)' }
         },
-        dropdown: {
-          '0%': { transform: 'translateY(-99vh)' },
-          '100%': { transform: 'translateY(0px)' },
+        open: {
+          '0%': { transform: 'translateX(-92%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' }
         },
-        sideRight: {
-          // '0%': { maxWidth: '0px' },
-          // '100%': { maxWidth: '100%' },
-          '0%': { transform: 'translateX(-100%)', zIndex: '-1' },
-          '50%': { transform: 'translateY(0)'  },
-          '100%': { zIndex: '0'  },
-        }
+        close: {
+          '0%': { transform: 'translateX(0)', opacity:'1' },
+          '100%': { transform: 'translateX(-92%)', opacity:'0' }
+        },
+        opacityOpen: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
+        },
+        opacityClose: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' }
+        },
       },
       animation: {
-        pop: 'pop .5s linear',
-        opacity: 'opacity .1s linear',
-        dropdown: 'dropdown .5s linear',
-        sideRight: 'sideRight .5s linear',
+        loading: 'loading 1s infinite linear',
+        shake: 'shake 1s',
+        open: 'open 1s forwards',
+        close: 'close 1s forwards',
+        opacityOpen: 'opacityOpen 1s forwards',
+        opacityOpen2: 'opacityOpen 1.5s forwards',
+        opacityClose: 'opacityClose 300ms forwards',
       },
       fontFamily: {
         noto: ["Noto", "serif"],

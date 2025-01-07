@@ -2,8 +2,6 @@
 import { CollectionModal } from "@/components/collectionModal";
 import Loading from "@/components/loading";
 import { ModalLogout } from "@/components/modalLogout";
-import { useUser } from "@/hooks/useUser";
-import { useEffect, useState } from "react";
 import {
 	AcademicCap,
 	ArchiveBox,
@@ -11,8 +9,18 @@ import {
 	ChartPie,
 	CodeSquare,
 	CreditCard,
+	Home,
+	Identification,
+	Language,
+	LightBulb,
 	MusicalNote,
+  ShoppingBag,
+  ShoppingCart,
+  Truck,
+  WrenchScrewdriver,
 } from "@/components/svg";
+import { useUser } from "@/hooks/useUser";
+import { useEffect, useState } from "react";
 
 interface CollectionData {
   name: string;
@@ -23,13 +31,11 @@ interface CollectionData {
 export default function Task() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
-  const { user } = useUser();
+  const [collectionUpdate, setCollectionUpdate] = useState(0);
   const [collections, setCollections] = useState<CollectionData[]>([]);
-  const [collectionsData, setCollectionsData] = useState<CollectionData>({
-    name: '',
-    icon: '',
-    id: 0
-  });
+  const [selectedCollection, setSelectedCollection] = useState('');
+  
+  const { user } = useUser();
 
   useEffect(() => {
     setLoading(true);
@@ -47,22 +53,28 @@ export default function Task() {
           },
         });
 
-        // [todo] - tratar os erros
-
         const responseData = await response.json();
+    
+        if (!response.ok) {
+          // throw new Error(`HTTP error! ${responseData.error} status ${response.status}`);
+          return console.log('No collections found');
+        }
+
         setCollections(responseData);
-        
+        console.log("update", collectionUpdate);
       } catch (error) {
-        error;
-      } finally {
+        throw new Error(`HTTP error! ${error}`);
+      }
+      finally {
+        // setTimeout(() => setLoading(false), 10);
         setLoading(false);
       }
     };
 
     fetchCollections();
-  }, [user]);
+  }, [user, collectionUpdate]);
 
-  const renderIcon = (collection: string, size: "mini" |"sm" | "md" | "lg"   ) => {
+  const renderIcon = (collection: string, size: "mini" |"sm" | "md" | "lg" | "full"   ) => {
     switch (collection) {
       case "AcademicCap":
         return <AcademicCap size={size} />;
@@ -78,15 +90,31 @@ export default function Task() {
         return <CreditCard size={size} />;
       case "MusicalNote":
         return <MusicalNote size={size} />;
+      case "LightBulb":
+        return <LightBulb size={size} />;
+      case "Home":
+        return <Home size={size} />;
+      case "Identification":
+        return <Identification size={size} />;
+      case "Language":
+        return <Language size={size} />;
+      case "ShoppingBag":
+        return <ShoppingBag size={size} />;
+      case "ShoppingCart":
+        return <ShoppingCart size={size} />;
+      case "Truck":
+        return <Truck size={size} />;
+      case "WrenchScrewdriver":
+        return <WrenchScrewdriver size={size} />;
       default:
         return <AcademicCap size={size} />;
     }
   }
 
-  // const handleCollection = (collection: string) => {
-  //   setSelectedCollection(collection);
-  //   setStep(2);
-  // };
+  const handleCollection = (collection: string) => {
+    setSelectedCollection(collection);
+    setStep(2);
+  };
 
   // [todo] - tratar melhor o loading
   // if (loading) return <Loading height="h-4" />;
@@ -98,50 +126,49 @@ export default function Task() {
       </nav>
 
       <div className="flex flex-row">
-        {step !== 1 && 
-          <aside className="relative bg-zinc-800 w-[60px] h-[calc(100vh-3rem)] p-4">
-            <div className="flex flex-col">
-              {collections.map((collection) => (
-                <button
-                  type="button"
-                  key={collection.id}
-                  className="bg-zinc-800 mb-8"
-                  // onClick={() => handleCollection(collection.name)}
-                >
-                  {renderIcon(collection.icon, "sm")}
-                </button>
-              ))}
-            </div>
-          </aside>
-        }
+        <aside className={`${step !== 1 ? "animate-open" : "animate-close"} relative bg-zinc-800 w-[60px] h-[calc(100vh-3rem)] p-4`}>
+          <div className={"flex flex-col"}>
+            {collections.map((collection) => (
+              <button
+                type="button"
+                key={collection.id}
+                className="bg-zinc-800 mb-8"
+                onClick={() => handleCollection(collection.name)}
+              >
+                {renderIcon(collection.icon, "sm")}
+              </button>
+            ))}
+          </div>
+        </aside>
 
-        <section className="w-full flex flex-col items-center py-10 px-20 overflow-scroll">
+        <section className="w-full flex flex-col items-center py-10 px-20 h-[calc(100vh-3rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-500 scrollbar-track-background">
           {loading ? (
-            <div className="h-[calc(100vh-150px)] flex justify-center">
-              <Loading height="h-10" />
+            <div className="flex justify-center w-full h-full">
+              <Loading height="h-8" />
             </div>
           ) : (
             <>
               {/* COLLECTIONS */}
               {step === 1 && (
                 <div className={`${collections.length === 0 ? "flex-col" : "flex-row"} flex gap-6`}>
-                  {collections.length === 0 ?( 
+                  {collections.length <= 0 ?( 
                     <div className="text-center">
                       <h1>Create your first collection!</h1>
                     </div>
                   ) : (
-                    <div className="flex flex-row flex-wrap gap-3">
+                    <div className="grid grid-cols-5 gap-6">
                       {collections.map((collection) => (
                         <button
                           type="button"
                           key={collection.id}
-                          className="bg-zinc-800 rounded-lg p-4 flex flex-col gap-2 items-center w-[200px]"
+                          className="bg-zinc-800 flex flex-col items-center w-[150px] rounded-lg"
+                          onClick={() => handleCollection(collection.name)}
                         >
-                          <div>
-                            {renderIcon(collection.icon, "lg")}
+                          <div className="grid place-items-center h-40 p-8">
+                            {renderIcon(collection.icon, "full")}
                           </div>
     
-                          <p>
+                          <p className="p-2">
                             {collection.name}
                           </p>
                         </button>
@@ -149,8 +176,10 @@ export default function Task() {
                     </div>
                   )}
                   
+                  
                   <div className="flex items-center justify-center">
-                    <CollectionModal />
+                  {/* <div className="absolute bottom-8 right-8"> */}
+                    <CollectionModal setCollectionUpdate={setCollectionUpdate}/>
                   </div>
     
                 </div>
@@ -158,14 +187,12 @@ export default function Task() {
       
               {/* TASKS */}
               {step === 2 && (
-                <section>
-                  <span>TODO</span>
-                  <button type="button" onClick={() => setStep(1)}>return</button>
-                  {/* <div className="flex flex-row gap-4">
+                <section className="w-1/2 flex flex-col gap-4">
+                  <div className="flex flex-row gap w-full">
                     <button
                       type="button"
                       onClick={() => setStep(1)}
-                      className="p-2 rounded bg-zinc-700 grid place-items-center"
+                      className="p-2 rounded bg-zinc-700 grid place-items-center w-1/6"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
                         <title>Return</title>
@@ -173,10 +200,10 @@ export default function Task() {
                       </svg>
                     </button>
                     
-                    <h1 className="text-xl font-bold flex items-center">{selectedCollection}</h1>
+                    <h1 className="text-xl font-bold w-full text-center">{selectedCollection}</h1>
                   </div>
     
-                  <div className="mt-8 w-full max-w-lg">
+                  {/* <div className="mt-8 w-full max-w-lg">
                     {filteredTasks.map((task) => (
                       <div key={task.id}>
                         <h3 className="font-bold text-lg">{task.title}</h3>
@@ -194,7 +221,6 @@ export default function Task() {
               )}
             </>
           )}
-
         </section>
 
       </div>

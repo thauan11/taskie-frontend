@@ -2,14 +2,20 @@
 import { deleteCookie } from "@/hooks/deleteCookie";
 import { useRouter } from "next/navigation";
 import { UserPortrait } from "./user";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Loading from "./loading";
+import { useUser } from "@/hooks/useUser";
 
 export function ModalLogout() {
   const [showLogout, setShowLogout] = useState(false);
 	const [loading, setLoading] = useState(false);
 
 	const router = useRouter();
+  const { user } = useUser();
+
+	const splitText = (text: string) => {
+		return text.split(' ')[0]
+	}
 
 	const handleLogout = async () => {
 		setLoading(true);
@@ -21,7 +27,7 @@ export function ModalLogout() {
 	return (
 		<>
 			{loading && (
-				<div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-white/30">
+				<div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-zinc-50/10">
 					<Loading height="h-10" />
 				</div>
 			)}
@@ -38,7 +44,11 @@ export function ModalLogout() {
 				<UserPortrait size="sm" />
 
 				{showLogout &&
-					<div className="absolute top-10 right-[-0.5rem] py-1 px-4 bg-zinc-600 w-32 flex justify-center">
+					<div className="absolute top-10 right-[-0.5rem] bg-zinc-600 w-32 p-2 flex flex-col justify-center">
+						<div className="border-b border-dotted text-center pb-2 mb-2">
+							{splitText(user?.name as string)}'s Taskie
+						</div>
+
 						<button type="button" onClick={handleLogout}>
 							Logout
 						</button>

@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import {
 	AcademicCap,
 	ArchiveBox,
@@ -18,22 +17,28 @@ import {
   WrenchScrewdriver,
 } from "@/components/svg";
 import { useUser } from "@/hooks/useUser";
+import { type Dispatch, type SetStateAction, useState } from "react";
+
+interface Props {
+  setCollectionUpdate: Dispatch<SetStateAction<number>>;
+}
 
 interface Collection {
   name: string;
   icon: string;
 }
 
-export function CollectionModal() {
+export function CollectionModal({ setCollectionUpdate }: Props) {
   const [loading, setLoading] = useState(false);
   const [isChangeIcon, setIsChangeIcon] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { user } = useUser();
 	const [collectionModalOpen, setCollectionModalOpen] = useState(false);
   const [collection, setCollection] = useState<Collection>({
     name: "",
     icon: "AcademicCap",
   });
+
+  const { user } = useUser();
 
   const selectIcon = () => {
     switch (collection.icon) {
@@ -107,15 +112,17 @@ export function CollectionModal() {
         setTimeout(() => {
           setErrorMessage(responseData.error);
         }, 10);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! ${responseData.error}`);
       }
 
       setCollection({
         name: "",
-        icon: "",
+        icon: "AcademicCap",
       });
+      
+      setCollectionUpdate(collectionUpdate => collectionUpdate + 1);
+      setCollectionModalOpen(false);
 
-      console.log(responseData);
     } catch (error) {
       throw new Error(`Error: ${error}`);
     } finally {
@@ -127,7 +134,8 @@ export function CollectionModal() {
 		<>
 			<button
 				type="button"
-				className="bg-white/10 w-12 h-12 rounded-full flex justify-center items-center hover:bg-white/20 transition"
+				// className="bg-white/10 w-12 h-12 rounded-full flex justify-center items-center hover:bg-white/20 transition absolute right-4 bottom-4"
+        className="bg-white/10 w-12 h-12 rounded-full flex justify-center items-center hover:bg-white/20 transition"
 				onClick={() => setCollectionModalOpen(true)}
 			>
 				<svg
@@ -145,15 +153,15 @@ export function CollectionModal() {
 				</svg>
 			</button>
 
-			{collectionModalOpen && (
-				<>
+			{/* {collectionModalOpen && ( */}
+				<div className={`${collectionModalOpen ? 'animate-opacityOpen' : 'animate-opacityClose -z-50'}`}>
 					<button
 						type="button"
 						onClick={() => {setCollectionModalOpen(false); setIsChangeIcon(false); setErrorMessage("")}}
-						className="absolute top-0 left-0 w-full h-full z-10 cursor-default bg-zinc-50/10"
+						className="absolute top-0 left-0 w-full h-full z-10 cursor-default bg-zinc-100/5"
 					/>
 
-					<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+					<div className={`${collectionModalOpen && 'animate-opacityOpen2'} absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20`}>
 						<div className={`${isChangeIcon ? "rounded-l-lg" : "rounded-lg"} relative bg-zinc-800 flex flex-row`}>
               <div className="px-6 py-4">
                 <div className="h-[150px] grid place-items-center mb-4">
@@ -185,86 +193,82 @@ export function CollectionModal() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                     </svg>
                   </button>
-
-                  {errorMessage && (
-                    <div className="text-red-500 text-sm absolute bottom-[-2rem] animate-pop">
-                      <p>{errorMessage}</p>
-                    </div>
-                  )}
-
                 </div>
+
+                {errorMessage && (
+                  <div className="text-red-500 text-sm animate-shake pt-4">
+                    <p>{errorMessage}</p>
+                  </div>
+                )}
               </div>
 
-              {isChangeIcon && (
-                <div className="bg-zinc-900 text-foreground w-[250px] h-full p-4 rounded-r absolute left-[230px] animate-sideRight overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700">
-                  <div className="flex flex-row justify-between flex-wrap gap-3">
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "AcademicCap" })}>
-                      <AcademicCap size="md" />
-                    </button>
+              <div className={`${isChangeIcon ? "animate-open" : "animate-close"} bg-zinc-900 text-foreground w-[250px] h-full p-4 rounded-r absolute left-[230px] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700 -z-10`}>
+                <div className="grid grid-cols-3 justify-items-center gap-3">
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "AcademicCap" })}>
+                    <AcademicCap size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "ArchiveBox" })}>
-                      <ArchiveBox size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "ArchiveBox" })}>
+                    <ArchiveBox size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Briefcase" })}>
-                      <Briefcase size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "Briefcase" })}>
+                    <Briefcase size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "ChartPie" })}>
-                      <ChartPie size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "ChartPie" })}>
+                    <ChartPie size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "CodeSquare" })}>
-                      <CodeSquare size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "CodeSquare" })}>
+                    <CodeSquare size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "CreditCard" })}>
-                      <CreditCard size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "CreditCard" })}>
+                    <CreditCard size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "MusicalNote" })}>
-                      <MusicalNote size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "MusicalNote" })}>
+                    <MusicalNote size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Home" })}>
-                      <Home size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "Home" })}>
+                    <Home size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Identification" })}>
-                      <Identification size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "Identification" })}>
+                    <Identification size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Language" })}>
-                      <Language size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "Language" })}>
+                    <Language size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "LightBulb" })}>
-                      <LightBulb size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "LightBulb" })}>
+                    <LightBulb size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "ShoppingBag" })}>
-                      <ShoppingBag size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "ShoppingBag" })}>
+                    <ShoppingBag size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "ShoppingCart" })}>
-                      <ShoppingCart size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "ShoppingCart" })}>
+                    <ShoppingCart size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "WrenchScrewdriver" })}>
-                      <WrenchScrewdriver size="md" />
-                    </button>
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "WrenchScrewdriver" })}>
+                    <WrenchScrewdriver size="md" />
+                  </button>
 
-                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Truck" })}>
-                      <Truck size="md" />
-                    </button>
-                  </div>
-
+                  <button type="button" onClick={() => setCollection({ ...collection, icon: "Truck" })}>
+                    <Truck size="md" />
+                  </button>
                 </div>
-              )}
+              </div>
 						</div>
 					</div>
-				</>
-			)}
+				</div>
+			{/* )} */}
 		</>
 	);
 }

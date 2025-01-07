@@ -1,11 +1,12 @@
 
 
-export function ArchiveBox({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function ArchiveBox({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -17,12 +18,13 @@ export function ArchiveBox({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" 
   );
 }
 
-export function AcademicCap({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function AcademicCap({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -33,12 +35,13 @@ export function AcademicCap({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg"
   );
 }
 
-export function ChartPie({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function ChartPie({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -50,12 +53,13 @@ export function ChartPie({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" })
   );
 }
 
-export function Briefcase({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function Briefcase({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -66,12 +70,13 @@ export function Briefcase({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }
   );
 }
 
-export function CodeSquare({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function CodeSquare({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -82,12 +87,13 @@ export function CodeSquare({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" 
   );
 }
 
-export function CreditCard({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function CreditCard({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -98,12 +104,13 @@ export function CreditCard({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" 
   );
 }
 
-export function MusicalNote({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function MusicalNote({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -114,12 +121,13 @@ export function MusicalNote({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg"
   );
 }
 
-export function Identification({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function Identification({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -130,12 +138,13 @@ export function Identification({ size = "sm" }: { size?: "mini" |"sm" | "md" | "
   );
 }
 
-export function Home({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function Home({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -146,12 +155,13 @@ export function Home({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
   );
 }
 
-export function Language({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function Language({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -162,12 +172,13 @@ export function Language({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" })
   );
 }
 
-export function LightBulb({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function LightBulb({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -178,12 +189,13 @@ export function LightBulb({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }
   );
 }
 
-export function ShoppingBag({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function ShoppingBag({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -194,12 +206,13 @@ export function ShoppingBag({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg"
   );
 }
 
-export function ShoppingCart({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function ShoppingCart({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -210,12 +223,13 @@ export function ShoppingCart({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg
   );
 }
 
-export function WrenchScrewdriver({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function WrenchScrewdriver({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(
@@ -226,12 +240,13 @@ export function WrenchScrewdriver({ size = "sm" }: { size?: "mini" |"sm" | "md" 
   );
 }
 
-export function Truck({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" }) {
+export function Truck({ size = "sm" }: { size?: "mini" |"sm" | "md" | "lg" | "full" }) {
   const sizes = {
     mini: "w-4 h-4",
     sm: "w-8 h-8",
     md: "w-12 h-12",
-    lg: "w-16 h-16"
+    lg: "w-16 h-16",
+    full: "w-full h-full"
   };
 
   return(

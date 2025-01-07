@@ -5,6 +5,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  portrait: string;
 }
 
 export function useUser() {

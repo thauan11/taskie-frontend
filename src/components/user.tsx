@@ -20,6 +20,10 @@ export function UserPortrait({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
     lg: "w-16 h-16"
   };
 
+	const splitText = (text: string) => {
+		return text.split(' ')[0]
+	}
+
   return (
     <div className={`relative ${sizes[size]} rounded-full`}>
       {user?.portrait ? (
@@ -31,7 +35,8 @@ export function UserPortrait({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
         />
       ) : (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`${sizes[size]} object-cover`}>
-          <title>{user?.name} portrait</title>
+          {/* <title>{splitText(user?.name as string)}'s portrait</title> */}
+          <title> </title>
           <path fillRule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clipRule="evenodd" />
         </svg>
       )}
