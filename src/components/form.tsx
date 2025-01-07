@@ -15,6 +15,13 @@ export function Form() {
 
   const router = useRouter();
 
+  const capitalizeWords = (text: string) => {
+    return text
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
   const clearInputs = () => {
     setName("");
     setEmail("");
@@ -54,6 +61,7 @@ export function Form() {
         setIsLoading(false);
         return focusInput("name");
       }
+
       if (email === "") {
         setTimeout(() => {
           setErrorMessage("Email is required.");
@@ -61,6 +69,7 @@ export function Form() {
         setIsLoading(false);
         return focusInput("email");
       }
+      
       if (password === "") {
         setTimeout(() => {
           setErrorMessage("Password is required.");
@@ -70,8 +79,8 @@ export function Form() {
       }
 
       const data = {
-        name,
-        email,
+        name: capitalizeWords(name),
+        email: email.toLocaleLowerCase(),
         password,
       }
   
@@ -112,7 +121,7 @@ export function Form() {
       }
   
       const data = {
-        email,
+        email: email.toLocaleLowerCase(),
         password,
         rememberMe,
       }
@@ -128,13 +137,15 @@ export function Form() {
           credentials: 'include',
         });
   
-        if (response.ok) {
-          setErrorMessage("");
-          router.push("/tasks");
-        } else {
+        if (!response.ok) {
           console.error('Login error:', response.status);
           setErrorMessage("Invalid email or password.");
+          setIsLoading(false);
         }
+        
+        setErrorMessage("");
+        router.push("/tasks");
+
       } catch (error) {
         console.error(error);
         setErrorMessage("An error occurred. Please try again.");

@@ -115,7 +115,7 @@ export default function Task() {
           </aside>
         }
 
-        <section className="w-full flex flex-col items-center py-10 px-20 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-500 scrollbar-track-background">
+        <section className="w-full flex flex-col items-center py-10 px-20 overflow-scroll">
           {loading ? (
             <div className="h-[calc(100vh-150px)] flex justify-center">
               <Loading height="h-10" />
@@ -127,21 +127,23 @@ export default function Task() {
                 <div className={`${collections.length === 0 ? "flex-col" : "flex-row"} flex gap-6`}>
                   {collections.length === 0 ?( 
                     <div className="text-center">
-                      {/* <h1>You don't have any Taskie</h1> */}
-                      {/* <h2>Create a new one</h2> */}
                       <h1>Create your first collection!</h1>
                     </div>
                   ) : (
-                    <div className="flex flex-row justify-center gap-3">
+                    <div className="flex flex-row flex-wrap gap-3">
                       {collections.map((collection) => (
                         <button
                           type="button"
                           key={collection.id}
-                          className="bg-zinc-800 rounded-lg p-4"
+                          className="bg-zinc-800 rounded-lg p-4 flex flex-col gap-2 items-center w-[200px]"
                         >
-                          {renderIcon(collection.icon, "lg")}
+                          <div>
+                            {renderIcon(collection.icon, "lg")}
+                          </div>
     
-                          {collection.name}
+                          <p>
+                            {collection.name}
+                          </p>
                         </button>
                       ))}
                     </div>

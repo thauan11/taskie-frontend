@@ -33,8 +33,11 @@ export default {
           '100%': { transform: 'translateY(0px)' },
         },
         sideRight: {
-          '0%': { maxWidth: '0px' },
-          '100%': { maxWidth: '100%' },
+          // '0%': { maxWidth: '0px' },
+          // '100%': { maxWidth: '100%' },
+          '0%': { transform: 'translateX(-100%)', zIndex: '-1' },
+          '50%': { transform: 'translateY(0)'  },
+          '100%': { zIndex: '0'  },
         }
       },
       animation: {

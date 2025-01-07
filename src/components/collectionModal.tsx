@@ -7,7 +7,15 @@ import {
 	ChartPie,
 	CodeSquare,
 	CreditCard,
+	Home,
+	Identification,
+	Language,
+	LightBulb,
 	MusicalNote,
+  ShoppingBag,
+  ShoppingCart,
+  Truck,
+  WrenchScrewdriver,
 } from "@/components/svg";
 import { useUser } from "@/hooks/useUser";
 
@@ -17,14 +25,15 @@ interface Collection {
 }
 
 export function CollectionModal() {
+  const [loading, setLoading] = useState(false);
+  const [isChangeIcon, setIsChangeIcon] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { user } = useUser();
 	const [collectionModalOpen, setCollectionModalOpen] = useState(false);
   const [collection, setCollection] = useState<Collection>({
     name: "",
-    icon: "",
+    icon: "AcademicCap",
   });
-  const [isChangeIcon, setIsChangeIcon] = useState(false);
-  const { user } = useUser();
-  const [loading, setLoading] = useState(false);
 
   const selectIcon = () => {
     switch (collection.icon) {
@@ -42,20 +51,46 @@ export function CollectionModal() {
         return <CreditCard size="lg" />;
       case "MusicalNote":
         return <MusicalNote size="lg" />;
+      case "LightBulb":
+        return <LightBulb size="lg" />;
+      case "Home":
+        return <Home size="lg" />;
+      case "Identification":
+        return <Identification size="lg" />;
+      case "Language":
+        return <Language size="lg" />;
+      case "ShoppingBag":
+        return <ShoppingBag size="lg" />;
+      case "ShoppingCart":
+        return <ShoppingCart size="lg" />;
+      case "Truck":
+        return <Truck size="lg" />;
+      case "WrenchScrewdriver":
+        return <WrenchScrewdriver size="lg" />;
       default:
         return <AcademicCap size="lg" />;
     }
   }
-  
+
+  const capitalizeWords = (text: string) => {
+    return text
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
   const createCollection = async () => {
     setLoading(true);
+    setErrorMessage("");
 
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+    if (!user) return setLoading(false);
 
     try {
+      const data = {
+        name: capitalizeWords(collection.name),
+        icon: collection.icon,
+      };
+
       const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collections`;
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -63,10 +98,15 @@ export function CollectionModal() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(collection),
+        body: JSON.stringify(data),
       });
 
+      const responseData = await response.json();
+  
       if (!response.ok) {
+        setTimeout(() => {
+          setErrorMessage(responseData.error);
+        }, 10);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -75,12 +115,9 @@ export function CollectionModal() {
         icon: "",
       });
 
-      const responseData = await response.json();
       console.log(responseData);
-
     } catch (error) {
-      error
-
+      throw new Error(`Error: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -112,14 +149,14 @@ export function CollectionModal() {
 				<>
 					<button
 						type="button"
-						onClick={() => {setCollectionModalOpen(false); setIsChangeIcon(false);}}
-						className="absolute top-0 left-0 w-full h-full bg-white/5 z-10 cursor-default"
+						onClick={() => {setCollectionModalOpen(false); setIsChangeIcon(false); setErrorMessage("")}}
+						className="absolute top-0 left-0 w-full h-full z-10 cursor-default bg-zinc-50/10"
 					/>
 
 					<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-						<div className={`${isChangeIcon ? "rounded-l-lg" : "rounded-lg"} relative w-[250px] h-[300px] bg-zinc-800 p-4 flex flex-row animate-dropdown`}>
-              <div className="h-full">
-                <div className="h-2/3 grid place-items-center p-4">
+						<div className={`${isChangeIcon ? "rounded-l-lg" : "rounded-lg"} relative bg-zinc-800 flex flex-row`}>
+              <div className="px-6 py-4">
+                <div className="h-[150px] grid place-items-center mb-4">
                   <button
                     type="button"
                     className="bg-white/10 rounded-full h-full aspect-square grid place-items-center hover:bg-white/20 transition"
@@ -129,64 +166,96 @@ export function CollectionModal() {
                   </button> 
                 </div>
 
-                <div className="h-1/3 flex flex-col justify-between">
+                <div className="flex flex-row items-center justify-center gap-2">
                   <input
                     type="text"
-                    className="bg-transparent border-b border-dotted border-foreground text-foreground outline-none"
+                    className="bg-transparent outline-none text-center border-b border-dotted border-zinc-600 text-zinc-50 py-1 w-[150px]"
                     value={collection.name}
                     onChange={(e) => setCollection({ ...collection, name: e.target.value })}
                     placeholder="New collection"
                   />
 
-                  <div className="flex flex-row justify-between gap-2">
-                    <button
-                      type="button"
-                      className="bg-red-500 rounded w-1/2 py-1"
-                      onClick={() => setCollectionModalOpen(false)}
-                    >
-                      Cancel
-                    </button>
+                  <button
+                    type="button"
+                    className="bg-green-500 w-6 h-6 grid place-items-center rounded-full"
+                    onClick={() => createCollection()}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                      <title>Create</title>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </button>
 
-                    <button
-                      type="button"
-                      className="bg-green-500 rounded w-1/2 py-1"
-                      onClick={() => createCollection()}
-                    >
-                      Save
-                    </button>
-                  </div>
+                  {errorMessage && (
+                    <div className="text-red-500 text-sm absolute bottom-[-2rem] animate-pop">
+                      <p>{errorMessage}</p>
+                    </div>
+                  )}
+
                 </div>
               </div>
 
               {isChangeIcon && (
-                <div className="bg-white/30 text-zinc-800 w-[250px] h-full mr-[-1rem] mt-[-1rem] mb-[-1rem] rounded-r ml-4 p-4 absolute left-[235px] animate-sideRight overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700">
-                  <div className="flex flex-row justify-between flex-wrap">
+                <div className="bg-zinc-900 text-foreground w-[250px] h-full p-4 rounded-r absolute left-[230px] animate-sideRight overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700">
+                  <div className="flex flex-row justify-between flex-wrap gap-3">
                     <button type="button" onClick={() => setCollection({ ...collection, icon: "AcademicCap" })}>
-                      <AcademicCap size="lg" />
+                      <AcademicCap size="md" />
                     </button>
 
                     <button type="button" onClick={() => setCollection({ ...collection, icon: "ArchiveBox" })}>
-                      <ArchiveBox size="lg" />
+                      <ArchiveBox size="md" />
                     </button>
 
                     <button type="button" onClick={() => setCollection({ ...collection, icon: "Briefcase" })}>
-                      <Briefcase size="lg" />
+                      <Briefcase size="md" />
                     </button>
 
                     <button type="button" onClick={() => setCollection({ ...collection, icon: "ChartPie" })}>
-                      <ChartPie size="lg" />
+                      <ChartPie size="md" />
                     </button>
 
                     <button type="button" onClick={() => setCollection({ ...collection, icon: "CodeSquare" })}>
-                      <CodeSquare size="lg" />
+                      <CodeSquare size="md" />
                     </button>
 
                     <button type="button" onClick={() => setCollection({ ...collection, icon: "CreditCard" })}>
-                      <CreditCard size="lg" />
+                      <CreditCard size="md" />
                     </button>
 
                     <button type="button" onClick={() => setCollection({ ...collection, icon: "MusicalNote" })}>
-                      <MusicalNote size="lg" />
+                      <MusicalNote size="md" />
+                    </button>
+
+                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Home" })}>
+                      <Home size="md" />
+                    </button>
+
+                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Identification" })}>
+                      <Identification size="md" />
+                    </button>
+
+                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Language" })}>
+                      <Language size="md" />
+                    </button>
+
+                    <button type="button" onClick={() => setCollection({ ...collection, icon: "LightBulb" })}>
+                      <LightBulb size="md" />
+                    </button>
+
+                    <button type="button" onClick={() => setCollection({ ...collection, icon: "ShoppingBag" })}>
+                      <ShoppingBag size="md" />
+                    </button>
+
+                    <button type="button" onClick={() => setCollection({ ...collection, icon: "ShoppingCart" })}>
+                      <ShoppingCart size="md" />
+                    </button>
+
+                    <button type="button" onClick={() => setCollection({ ...collection, icon: "WrenchScrewdriver" })}>
+                      <WrenchScrewdriver size="md" />
+                    </button>
+
+                    <button type="button" onClick={() => setCollection({ ...collection, icon: "Truck" })}>
+                      <Truck size="md" />
                     </button>
                   </div>
 
