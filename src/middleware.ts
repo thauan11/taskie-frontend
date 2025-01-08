@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const rootRoute = ['/']
-const authRedirectRoutes = ['/login', '/']
+// const rootRoute = ['/']
+const authRedirectRoutes = ['/login']
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('authToken')?.value
   const { pathname } = request.nextUrl
 
-  const isRootRoute = rootRoute.includes(request.nextUrl.pathname)
-  if (!token || isRootRoute) {
+  // const isRootRoute = rootRoute.includes(request.nextUrl.pathname)
+  // if (!token || isRootRoute) {
+  if (!token) {
     return pathname === '/login' 
       ? NextResponse.next()
       : NextResponse.redirect(new URL('/login', request.url))
@@ -31,7 +32,7 @@ export async function middleware(request: NextRequest) {
     }
 
     if (authRedirectRoutes.includes(pathname)) {
-      return NextResponse.redirect(new URL('/tasks', request.url))
+      return NextResponse.redirect(new URL('/', request.url))
     }
 
     return NextResponse.next()

@@ -76,7 +76,7 @@ export function Form() {
         setIsLoading(false);
       }
       
-      router.push("/tasks");
+      router.push("/");
 
     } catch (error) {
       console.error(error);

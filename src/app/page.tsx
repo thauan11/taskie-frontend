@@ -121,23 +121,30 @@ export default function Task() {
   
   return (
     <main className="h-screen w-screen overflow-hidden">
-      <nav className="flex flex-row justify-end bg-zinc-800 p-2 border-b border-background">
+      <nav className="flex flex-row justify-end bg-zinc-800 p-2">
         <ModalLogout />
       </nav>
 
       <div className="flex flex-row">
         {/* <aside className={`${step !== 1 ? "animate-open" : "animate-close"} relative bg-zinc-800 w-[60px] h-[calc(100vh-3rem)] p-4`}> */}
         {step !== 1 &&(
-          <aside className={`${step !== 1 && "animate-open"} relative bg-zinc-800 w-[60px] h-[calc(100vh-3rem)] p-4`}>
+          <aside className={`${step !== 1 && "animate-open"} group/sidebar relative bg-zinc-900 max-w-[60px] hover:max-w-fit transition-all h-[calc(100vh-3rem)] p-4`}>
             <div className={"flex flex-col"}>
               {collections.map((collection) => (
                 <button
                   type="button"
                   key={collection.id}
-                  className="bg-transparent mb-8"
+                  className="bg-transparent mb-8 flex flex-row items-center gap-2"
                   onClick={() => handleCollection(collection.name)}
                 >
-                  {renderIcon(collection.icon, "sm")}
+                  <div>
+                    {renderIcon(collection.icon, "sm")}
+                  </div>
+
+                  <div className="w-0 overflow-hidden group-hover/sidebar:w-auto transition-all">
+                  {/* <div className=""> */}
+                    {collection.name}
+                  </div>
                 </button>
               ))}
             </div>
