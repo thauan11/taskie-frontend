@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server'
 
 // const rootRoute = ['/']
 const authRedirectRoutes = ['/login']
+const pathsAvailable = ['/', '/login']
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('authToken')?.value
@@ -12,6 +13,12 @@ export async function middleware(request: NextRequest) {
   // if (!token || isRootRoute) {
   if (!token) {
     return pathname === '/login' 
+      ? NextResponse.next()
+      : NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  if (!pathsAvailable.includes(pathname)) {
+    return pathname === '/'
       ? NextResponse.next()
       : NextResponse.redirect(new URL('/login', request.url))
   }
