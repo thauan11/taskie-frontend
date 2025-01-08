@@ -49,6 +49,14 @@ export default {
           '0%': { opacity: '1' },
           '100%': { opacity: '0' }
         },
+        popUpOpen: {
+          '0%': { opacity: '0', transform: 'scale(0.5) translate(-50%,-50%)' },
+          '100%': { opacity: '1', transform: 'scale(1) translate(-50%,-50%)' }
+        },
+        popUpClose: {
+          '0%': { opacity: '1', transform: 'scale(1) translate(-50%,-50%)' },
+          '100%': { opacity: '0', transform: 'scale(0.5) translate(-50%,-50%)' }
+        },
       },
       animation: {
         loading: 'loading 1s infinite linear',
@@ -56,8 +64,9 @@ export default {
         open: 'open 1s forwards',
         close: 'close 1s forwards',
         opacityOpen: 'opacityOpen 1s forwards',
-        opacityOpen2: 'opacityOpen 1.5s forwards',
-        opacityClose: 'opacityClose 300ms forwards',
+        opacityClose: 'opacityClose 0.5s forwards',
+        popUpOpen: 'popUpOpen 0.5s forwards',
+        popUpClose: 'popUpClose 0.5s forwards',
       },
       fontFamily: {
         noto: ["Noto", "serif"],

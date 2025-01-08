@@ -153,15 +153,15 @@ export function CollectionModal({ setCollectionUpdate }: Props) {
 				</svg>
 			</button>
 
-			{/* {collectionModalOpen && ( */}
-				<div className={`${collectionModalOpen ? 'animate-opacityOpen' : 'animate-opacityClose -z-50'}`}>
+			{collectionModalOpen && (
+				<div className={`${collectionModalOpen && 'animate-opacityOpen'}`}>
 					<button
 						type="button"
 						onClick={() => {setCollectionModalOpen(false); setIsChangeIcon(false); setErrorMessage("")}}
 						className="absolute top-0 left-0 w-full h-full z-10 cursor-default bg-zinc-100/5"
 					/>
 
-					<div className={`${collectionModalOpen && 'animate-opacityOpen2'} absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20`}>
+					<div className={`${collectionModalOpen && 'animate-popUpOpen'} absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20`}>
 						<div className={`${isChangeIcon ? "rounded-l-lg" : "rounded-lg"} relative bg-zinc-800 flex flex-row`}>
               <div className="px-6 py-4">
                 <div className="h-[150px] grid place-items-center mb-4">
@@ -268,7 +268,7 @@ export function CollectionModal({ setCollectionUpdate }: Props) {
 						</div>
 					</div>
 				</div>
-			{/* )} */}
+			)}
 		</>
 	);
 }

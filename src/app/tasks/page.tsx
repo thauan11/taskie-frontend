@@ -121,25 +121,28 @@ export default function Task() {
   
   return (
     <main className="h-screen w-screen overflow-hidden">
-      <nav className="flex flex-row justify-end bg-zinc-700 p-2">
+      <nav className="flex flex-row justify-end bg-zinc-800 p-2 border-b border-background">
         <ModalLogout />
       </nav>
 
       <div className="flex flex-row">
-        <aside className={`${step !== 1 ? "animate-open" : "animate-close"} relative bg-zinc-800 w-[60px] h-[calc(100vh-3rem)] p-4`}>
-          <div className={"flex flex-col"}>
-            {collections.map((collection) => (
-              <button
-                type="button"
-                key={collection.id}
-                className="bg-zinc-800 mb-8"
-                onClick={() => handleCollection(collection.name)}
-              >
-                {renderIcon(collection.icon, "sm")}
-              </button>
-            ))}
-          </div>
-        </aside>
+        {/* <aside className={`${step !== 1 ? "animate-open" : "animate-close"} relative bg-zinc-800 w-[60px] h-[calc(100vh-3rem)] p-4`}> */}
+        {step !== 1 &&(
+          <aside className={`${step !== 1 && "animate-open"} relative bg-zinc-800 w-[60px] h-[calc(100vh-3rem)] p-4`}>
+            <div className={"flex flex-col"}>
+              {collections.map((collection) => (
+                <button
+                  type="button"
+                  key={collection.id}
+                  className="bg-transparent mb-8"
+                  onClick={() => handleCollection(collection.name)}
+                >
+                  {renderIcon(collection.icon, "sm")}
+                </button>
+              ))}
+            </div>
+          </aside>
+        )}
 
         <section className="w-full flex flex-col items-center py-10 px-20 h-[calc(100vh-3rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-500 scrollbar-track-background">
           {loading ? (
@@ -188,11 +191,11 @@ export default function Task() {
               {/* TASKS */}
               {step === 2 && (
                 <section className="w-1/2 flex flex-col gap-4">
-                  <div className="flex flex-row gap w-full">
+                  <div className="flex flex-row gap-4 w-full pb-8">
                     <button
                       type="button"
                       onClick={() => setStep(1)}
-                      className="p-2 rounded bg-zinc-700 grid place-items-center w-1/6"
+                      className="p-2 rounded-xl bg-zinc-700 grid place-items-center"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
                         <title>Return</title>
@@ -200,22 +203,26 @@ export default function Task() {
                       </svg>
                     </button>
                     
-                    <h1 className="text-xl font-bold w-full text-center">{selectedCollection}</h1>
+                    <h1 className="text-xl font-bold grid place-items-center">{selectedCollection}</h1>
                   </div>
-    
-                  {/* <div className="mt-8 w-full max-w-lg">
-                    {filteredTasks.map((task) => (
-                      <div key={task.id}>
-                        <h3 className="font-bold text-lg">{task.title}</h3>
-                        <p className="text-gray-600">{task.description}</p>
-                        <div className="mt-2 text-sm text-gray-500">
-                          <p>Collection: {task.collection}</p>
-                          {task.endAt && <p>Due date: {new Date(task.endAt).toLocaleDateString()}</p>}
-                          <p>Status: {task.completed ? 'Completed' : 'Pending'}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div> */}
+                  
+                  <button type="button" className="border-b border-dotted rounded-md px-4 py-3 flex flex-row items-center gap-4 text-sm hover:bg-zinc-100/5 group mb-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 rounded-xl bg-main text-background p-1 group-hover:scale-[1.1] transition-all w-7 h-7">
+                      <title>Add a task</title>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+
+                    {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="size-6 rounded-xl bg-main text-background p-1 group-hover:scale-105 transition-all">
+                      <title>Add a task</title>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg> */}
+
+                    <p>Add a task</p>
+                  </button>
+
+                  <div>
+                    <h1>Value - Taskies</h1>
+                  </div>
                   
                 </section>
               )}

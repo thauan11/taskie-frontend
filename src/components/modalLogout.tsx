@@ -27,7 +27,7 @@ export function ModalLogout() {
 	return (
 		<>
 			{loading && (
-				<div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-zinc-50/10">
+				<div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-zinc-100/5">
 					<Loading height="h-10" />
 				</div>
 			)}
