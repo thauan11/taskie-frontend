@@ -19,11 +19,11 @@ export default {
       },
       keyframes: {
         loading: {
-          // '0%':,
+          '0%': { backgroundPosition: '0 25%,100% 25%,0 75%,100% 75%' },
           '5%': { backgroundPosition: '0 25%,100% 25%,0 75%,100% 75%' },
           '33%': { backgroundPosition: '0 50%,100% 0,0 100%,100% 50%' },
           '66%': { backgroundPosition: '0 50%,0 0,100% 100%,100% 50%'},
-          // '95%':,
+          '95%': { backgroundPosition: '0 75%,0 25%,100% 75%,100% 25%' },
           '100%': { backgroundPosition: '0 75%,0 25%,100% 75%,100% 25%' }
         },
         shake: {
