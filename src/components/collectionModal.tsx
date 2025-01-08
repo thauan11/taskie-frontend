@@ -153,9 +153,9 @@ export const ModalCollection = ({
 
   const updateCollection = async () => {
     if (!user) return setErrorMessage("User is defined");
-    if (!collection.name) return setErrorMessage("Name is required");
-    if (!collection.icon) return setErrorMessage("Icon is required");
-    if (!collection.id) return setErrorMessage("ID is defined");
+    // if (!collection.name) return setErrorMessage("Name is required");
+    // if (!collection.icon) return setErrorMessage("Icon is required");
+    // if (!collection.id) return setErrorMessage("ID is defined");
     if (!setTaskUpdate) return setErrorMessage("setTaskUpdate is defined");
     
     setLoading(true);
@@ -208,6 +208,18 @@ export const ModalCollection = ({
       </div>
     )
   }
+
+  useEffect(() => {
+    if (!user) return;
+    console.log(user);
+    const fetchCollections = async () => {
+      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collection/${collection.id}`;
+      const response = await fetch(endpoint, { credentials: "include" });
+      const responseData = await response.json();
+      console.log(responseData);
+    }
+    fetchCollections();
+  }, [user,collection.id]);
 
   return(
     <div className={`${handleOpen && 'animate-opacityOpen'}`}>

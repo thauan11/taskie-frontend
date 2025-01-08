@@ -55,16 +55,7 @@ export default function Task() {
     const fetchCollections = async () => {
       try {
         const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collections`;
-        // const response = await fetch(endpoint, {
-        //   method: 'GET',
-        //   credentials: 'include',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        // });
         const response = await fetch(endpoint, { credentials: "include" });
-        console.log(response);
-
         const responseData = await response.json();
     
         if (!response.ok) {
