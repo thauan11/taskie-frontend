@@ -19,6 +19,7 @@ import {
 import { useUser } from "@/hooks/useUser";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import Loading from "./loading";
+import { api } from "@/lib/api";
 
 interface Collection {
   name: string;
@@ -28,21 +29,24 @@ interface Collection {
 
 interface ModalProps {
   setModalOpen: Dispatch<SetStateAction<boolean>>;
+  setCollectionUpdate?: Dispatch<SetStateAction<boolean>>;
+  setCollectionCreated?: Dispatch<SetStateAction<boolean>>;
+  setTaskUpdate?: Dispatch<SetStateAction<boolean>>;
+  
   handleOpen: boolean;
-  setCollectionUpdate: Dispatch<SetStateAction<number>>;
   modalType: string;
 
   collectionIcon?: string;
   collectionName?: string;
   collectionId?: number;
   
-  setTaskUpdate?: Dispatch<SetStateAction<boolean>>;
 }
 
 export const ModalCollection = ({
   setModalOpen,
   handleOpen,
   setCollectionUpdate,
+  setCollectionCreated,
   modalType,
   collectionIcon,
   collectionName,
@@ -54,11 +58,16 @@ export const ModalCollection = ({
     icon: collectionIcon || "AcademicCap",
     id: collectionId || 0
   });
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setError] = useState("");
   const [isChangeIcon, setIsChangeIcon] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { user } = useUser();
+
+  const setErrorMessage = (message: string) => {
+    setError("");
+    setTimeout(() => setError(message), 10);
+  }
   
   const selectIcon = () => {
     switch (collection.icon) {
@@ -108,6 +117,7 @@ export const ModalCollection = ({
     setLoading(true);
     setErrorMessage("");
 
+    if (!setCollectionCreated) return setErrorMessage("setCollectionCreated is not defined");
     if (!user) return setLoading(false);
 
     try {
@@ -128,12 +138,7 @@ export const ModalCollection = ({
 
       const responseData = await response.json();
   
-      if (!response.ok) {
-        setTimeout(() => {
-          setErrorMessage(responseData.error);
-        }, 10);
-        throw new Error(`HTTP error! ${responseData.error}`);
-      }
+      if (!response.ok) return setErrorMessage(responseData.error);
 
       setCollection({
         name: "",
@@ -141,7 +146,7 @@ export const ModalCollection = ({
         id: 0
       });
       
-      setCollectionUpdate(collectionUpdate => collectionUpdate + 1);
+      setCollectionCreated(prev => !prev);
       setModalOpen(false);
 
     } catch (error) {
@@ -152,11 +157,12 @@ export const ModalCollection = ({
   }
 
   const updateCollection = async () => {
-    if (!user) return setErrorMessage("User is defined");
-    // if (!collection.name) return setErrorMessage("Name is required");
-    // if (!collection.icon) return setErrorMessage("Icon is required");
-    // if (!collection.id) return setErrorMessage("ID is defined");
-    if (!setTaskUpdate) return setErrorMessage("setTaskUpdate is defined");
+    if (!setCollectionUpdate) return setErrorMessage("setCollectionUpdate is not defined");
+    if (!user) return setErrorMessage("User is not defined");
+    if (!collection.name) return setErrorMessage("Name is required");
+    if (collection.name.length > 16) return setErrorMessage("Name is too long");
+    if (!collection.icon) return setErrorMessage("Icon is required");
+    if (!collection.id) return setErrorMessage("ID is required");
     
     setLoading(true);
     
@@ -165,37 +171,31 @@ export const ModalCollection = ({
         name: capitalizeWords(collection.name),
         icon: collection.icon,
       };
-
+  
       const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collections/${collection.id}`;
-      const response = await fetch(endpoint, {
+      
+      const response = await api.fetch(endpoint, {
         method: 'PATCH',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(data),
       });
-
-      const responseData = await response.json();
   
       if (!response.ok) {
-        setTimeout(() => {
-          setErrorMessage(responseData.error);
-        }, 10);
-        throw new Error(`HTTP error! ${responseData.error}`);
+        const responseData = await response.json();
+        return setTimeout(() => setErrorMessage(responseData.error), 10);
       }
-
+  
       setCollection({
         name: "",
         icon: "AcademicCap",
         id: 0
       });
       
-      setTaskUpdate(taskUpdate => !taskUpdate);
+      setCollectionUpdate(prev => !prev);
       setModalOpen(false);
-
+  
     } catch (error) {
-      throw new Error(`Error: ${error}`);
+      console.error(error);
+      setErrorMessage("Failed to update collection");
     } finally {
       setLoading(false);
     }
@@ -208,18 +208,6 @@ export const ModalCollection = ({
       </div>
     )
   }
-
-  useEffect(() => {
-    if (!user) return;
-    console.log(user);
-    const fetchCollections = async () => {
-      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collection/${collection.id}`;
-      const response = await fetch(endpoint, { credentials: "include" });
-      const responseData = await response.json();
-      console.log(responseData);
-    }
-    fetchCollections();
-  }, [user,collection.id]);
 
   return(
     <div className={`${handleOpen && 'animate-opacityOpen'}`}>
@@ -264,7 +252,7 @@ export const ModalCollection = ({
             </div>
 
             {errorMessage && (
-              <div className="text-red-500 text-sm text-center animate-shake pt-4">
+              <div className="pt-4 text-sm text-center text-red-500 animate-shake">
                 <p>{errorMessage}</p>
               </div>
             )}

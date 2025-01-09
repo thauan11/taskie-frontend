@@ -22,31 +22,44 @@ import {
 import { useUser } from "@/hooks/useUser";
 import { useEffect, useState } from "react";
 
-interface CollectionData {
+interface CollectionsData {
   name: string;
   icon: string;
   id: number;
 }
 
+interface SelectedCollection {
+  deleted: boolean;
+  icon: string;
+  id: number;
+  name: string;
+  userId: string;
+}
+
 export default function Task() {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
-  const [collectionUpdate, setCollectionUpdate] = useState(0);
-  const [collections, setCollections] = useState<CollectionData[]>([]);
-  const [selectedCollection, setSelectedCollection] = useState<CollectionData>({
-    name: "",
-    icon: "",
-    id: 0
-  });
   const [showSidebar, setShowSidebar] = useState(false);
+  
+  const [collectionCreated, setCollectionCreated] = useState(Boolean);
+  const [collections, setCollections] = useState<CollectionsData[]>([]);
+  const [selectedCollection, setSelectedCollection] = useState<SelectedCollection>({
+    deleted: false,
+    icon: "",
+    id: 0,
+    name: "",
+    userId: "",
+  });
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState('');
 
   const [taskUpdate, setTaskUpdate] = useState(false);
+  const [collectionUpdate, setCollectionUpdate] = useState(false);
   
   const { user } = useUser();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setLoading(true);
 
@@ -64,7 +77,7 @@ export default function Task() {
         }
 
         setCollections(responseData);
-        console.log("update", collectionUpdate);
+        collectionCreated;
       } catch (error) {
         throw new Error(`HTTP error! ${error}`);
       }
@@ -75,7 +88,7 @@ export default function Task() {
     };
 
     fetchCollections();
-  }, [user, collectionUpdate]);
+  }, [user, collectionCreated, collectionUpdate]);
 
   const renderIcon = (collection: string, size: "mini" |"sm" | "md" | "lg" | "full"   ) => {
     switch (collection) {
@@ -113,11 +126,32 @@ export default function Task() {
         return <AcademicCap size={size} />;
     }
   }
+    
+  const fetchCollections = async (collectionId: number) => {
+    if (!user) return;
 
-  const handleCollection = (name: string, icon: string, id: number) => {
-    setSelectedCollection({ name: name, icon: icon, id: id });
+    const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collection/${collectionId}`;
+    const response = await fetch(endpoint, { credentials: "include" });
+    const responseData = await response.json();
+
+    if (!response.ok) return console.log('No collections found');
+
+    setSelectedCollection(responseData[0]);
+  }
+
+  const handleCollection = (id: number) => {
+    setSelectedCollection({ ...selectedCollection, id: id });
+    fetchCollections(id);
     setStep(2);
   };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    const id = selectedCollection.id;
+    if (!id) return;
+
+    fetchCollections(id);
+  }, [selectedCollection.id, collectionUpdate]);
 
   // [todo] - tratar melhor o loading
   // if (loading) return <Loading height="h-4" />;
@@ -128,11 +162,12 @@ export default function Task() {
         <ModalCollection
           handleOpen={modalOpen}
           setModalOpen={setModalOpen}
-          setCollectionUpdate={setCollectionUpdate}
           modalType={modalType}
           collectionIcon={selectedCollection.icon}
           collectionName={selectedCollection.name}
           collectionId={selectedCollection.id}
+          setCollectionCreated={setCollectionCreated}
+          setCollectionUpdate={setCollectionUpdate}
           setTaskUpdate={setTaskUpdate}
         />
       }
@@ -153,7 +188,7 @@ export default function Task() {
                       type="button"
                       key={collection.id}
                       className="bg-transparent flex flex-row items-center gap-2"
-                      onClick={() => handleCollection(collection.name, collection.icon, collection.id)}
+                      onClick={() => handleCollection(collection.id)}
                     >
                       <div>
                         {renderIcon(collection.icon, "sm")}
@@ -208,14 +243,14 @@ export default function Task() {
                           <button
                             type="button"
                             key={collection.id}
-                            className="bg-zinc-800 flex flex-col items-center w-[150px] rounded-lg"
-                            onClick={() => handleCollection(collection.name, collection.icon, collection.id)}
+                            className="bg-zinc-800 flex flex-col items-center w-[175px] rounded-lg"
+                            onClick={() => handleCollection(collection.id)}
                           >
                             <div className="grid place-items-center h-40 p-8">
                               {renderIcon(collection.icon, "full")}
                             </div>
       
-                            <p className="p-2">
+                            <p className="px-4 py-2">
                               {collection.name}
                             </p>
                           </button>
