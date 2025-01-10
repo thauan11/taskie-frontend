@@ -1,13 +1,13 @@
 
 
 interface Props {
-  size: "mini" |"sm" | "md" | "lg" | "full";
+  size?: "mini" |"sm" | "md" | "lg" | "full";
 };
 
 const sizes = ( size: string ) => {
   switch (size) {
     case "mini":
-      return "w-4 h-4";
+      return "w-5 h-5";
     case "sm":
       return "w-8 h-8";
     case "md":
@@ -21,6 +21,35 @@ const sizes = ( size: string ) => {
   }
 }
 
+// ICONES GERAIS
+export function Confirm({ size = "sm" }: Props) {
+  return(
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={sizes(size)}>
+      <title>Confirm</title>
+      <path strokeLinecap="round" strokeLinejoin="round" d="m7.49 12-3.75 3.75m0 0 3.75 3.75m-3.75-3.75h16.5V4.499" />
+    </svg>
+  )
+}
+
+export function Edit({ size = "sm" }: Props) {
+  return(
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={sizes(size)}>
+      <title>Edit collection</title>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+    </svg>
+  )
+}
+
+export function New({ size = "sm" }: Props) {
+  return(
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={sizes(size)}>
+      <title>New collection</title>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+  )
+}
+
+// ICONES DAS COLEÇÕES
 export function ArchiveBox({ size = "sm" }: Props) {
   return(
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={sizes(size)}>

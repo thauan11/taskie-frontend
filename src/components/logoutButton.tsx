@@ -1,12 +1,12 @@
 "use client";
 import { deleteCookie } from "@/hooks/deleteCookie";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Loading from "./loading";
 import { useUser } from "@/hooks/useUser";
 import Image from "next/image";
 
-export function ModalLogout() {
+export function LogoutButton() {
 	const [showLogout, setShowLogout] = useState(false);
 	const [loading, setLoading] = useState(false);
 
@@ -59,7 +59,6 @@ export function ModalLogout() {
 							fill="currentColor"
 							className="w-8 h-8 object-cover"
 						>
-							{/* <title>{splitText(user?.name as string)}'s portrait</title> */}
 							<title> </title>
 							<path
 								fillRule="evenodd"

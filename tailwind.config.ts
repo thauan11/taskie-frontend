@@ -33,40 +33,66 @@ export default {
           '75%': { transform: 'translateX(5px)' },
           '100%': { transform: 'translateX(0)' }
         },
-        open: {
-          '0%': { transform: 'translateX(-92%)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' }
-        },
-        close: {
-          '0%': { transform: 'translateX(0)', opacity:'1' },
-          '100%': { transform: 'translateX(-92%)', opacity:'0' }
-        },
-        opacityOpen: {
+        opacity: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' }
         },
-        opacityClose: {
-          '0%': { opacity: '1' },
-          '100%': { opacity: '0' }
+        // opacityClose: {
+        //   '0%': { opacity: '1' },
+        //   '100%': { opacity: '0' }
+        // },
+        // popUpOpen: {
+        //   '0%': { opacity: '0', transform: 'scale(0.5) translate(-50%,-50%)' },
+        //   '100%': { opacity: '1', transform: 'scale(1) translate(-50%,-50%)' }
+        // },
+        // popUpClose: {
+        //   '0%': { opacity: '1', transform: 'scale(1) translate(-50%,-50%)' },
+        //   '100%': { opacity: '0', transform: 'scale(0.5) translate(-50%,-50%)' }
+        // },
+        sideContentOpen: {
+          '0%': { transform: 'translateX(100%)', opacity: '0.5' },
+          '50%': { transform: 'translateX(50%)', opacity: '1' },
+          '100%': { transform: 'translateX(0%)' },
         },
-        popUpOpen: {
-          '0%': { opacity: '0', transform: 'scale(0.5) translate(-50%,-50%)' },
-          '100%': { opacity: '1', transform: 'scale(1) translate(-50%,-50%)' }
+        sideContentClose: {
+          '0%': { transform: 'translateX(0%)' },
+          '50%': { transform: 'translateX(50%)', opacity: '1' },
+          '100%': { transform: 'translateX(100%)', opacity: '0' },
         },
-        popUpClose: {
-          '0%': { opacity: '1', transform: 'scale(1) translate(-50%,-50%)' },
-          '100%': { opacity: '0', transform: 'scale(0.5) translate(-50%,-50%)' }
+        changeIconOpen: {
+          '0%': { maxHeight: '0%', opacity: '0' },
+          '50%': { maxHeight: '50%', opacity: '1' },
+          '100%': { maxHeight: '100%' },
+        },
+        changeIconClose: {
+          '0%': { maxHeight: '100%', opacity: '1' },
+          '50%': { maxHeight: '50%', opacity: '0' },
+          '100%': { maxHeight: '0%' },
+        },
+        sideBarOpen: {
+          '0%': { transform: 'translateX(-92%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' }
+        },
+        sideBarClose: {
+          '0%': { transform: 'translateX(0)', opacity:'1' },
+          '100%': { transform: 'translateX(-92%)', opacity:'0' }
         },
       },
       animation: {
         loading: 'loading 1s infinite linear',
         shake: 'shake 1s',
-        open: 'open 1s forwards',
-        close: 'close 1s forwards',
-        opacityOpen: 'opacityOpen 1s forwards',
-        opacityClose: 'opacityClose 0.5s forwards',
-        popUpOpen: 'popUpOpen 0.5s forwards',
-        popUpClose: 'popUpClose 0.5s forwards',
+        // open: 'open 1s forwards',
+        // close: 'close 1s forwards',
+        opacity: 'opacity 500ms linear',
+        // opacityClose: 'opacityClose 0.5s forwards',
+        // popUpOpen: 'popUpOpen 0.5s forwards',
+        // popUpClose: 'popUpClose 0.5s forwards',
+        sideContentOpen: 'sideContentOpen 500ms linear forwards',
+        sideContentClose: 'sideContentClose 500ms linear forwards',
+        changeIconOpen: 'changeIconOpen 500ms linear forwards',
+        changeIconClose: 'changeIconClose 500ms linear forwards',
+        sideBarOpen: 'sideBarOpen 500ms linear forwards',
+        sideBarClose: 'sideBarClose 500ms linear forwards',
       },
       fontFamily: {
         noto: ["Noto", "serif"],
@@ -75,6 +101,9 @@ export default {
       fontSize: {
         'xxs': ['0.5rem', '0.75rem'],
       },
+      height: {
+        'full-nav': 'calc(100vh - 3.10rem)',
+      }
     },
   },
   plugins: [
