@@ -18,7 +18,7 @@ import {
   ShoppingCart,
   Truck,
   WrenchScrewdriver,
-} from "@/components/svg";
+} from "@/components/icons";
 import { useUser } from "@/hooks/useUser";
 import { useEffect, useState } from "react";
 
@@ -59,7 +59,6 @@ export default function Task() {
   
   const { user } = useUser();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setLoading(true);
 
@@ -71,19 +70,16 @@ export default function Task() {
         const response = await fetch(endpoint, { credentials: "include" });
         const responseData = await response.json();
     
-        if (!response.ok) {
-          // throw new Error(`HTTP error! ${responseData.error} status ${response.status}`);
-          return console.log('No collections found');
-        }
+        if (!response.ok) return console.log('No collections found');
 
         setCollections(responseData);
-        collectionCreated;
       } catch (error) {
         throw new Error(`HTTP error! ${error}`);
       }
       finally {
-        // setTimeout(() => setLoading(false), 10);
         setLoading(false);
+        collectionCreated;
+        collectionUpdate;
       }
     };
 
@@ -155,6 +151,33 @@ export default function Task() {
 
   // [todo] - tratar melhor o loading
   // if (loading) return <Loading height="h-4" />;
+
+  const ButtonCreateCollection = () => {
+    return (
+      <div className="grid place-items-center min-h-40 h-full p-8 rounded-lg">
+        <button
+          type="button"
+          // className="bg-white/10 w-12 h-12 rounded-full flex justify-center items-center hover:bg-white/20 transition absolute right-4 bottom-4"
+          className="bg-white/10 w-12 h-12 rounded-full flex justify-center items-center hover:bg-white/20 transition"
+          onClick={() => {setModalOpen(true); setModalType('create')}}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="size-6"
+          >
+            <title>New collection</title>
+            <path
+              fillRule="evenodd"
+              d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    )
+  }
   
   return (
     <>
@@ -180,7 +203,7 @@ export default function Task() {
         <div className="flex flex-row">
           {/* <aside className={`${step !== 1 ? "animate-open" : "animate-close"} relative bg-zinc-800 w-[60px] h-[calc(100vh-3rem)] p-4`}> */}
           {step !== 1 &&(
-            <aside className={`${step !== 1 && "animate-open"} group/sidebar relative bg-zinc-900 ${showSidebar ? "max-w-[100%]":"max-w-[60px]"} transition-all h-[calc(100vh-3rem)] p-4`}>
+            <aside className={`${step !== 1 && "animate-open"} group/sidebar relative bg-zinc-900 transition-all h-[calc(100vh-3rem)] p-4 ${showSidebar ? "max-w-[100%]":"max-w-[60px]"}`}>
               <div className="flex flex-col justify-between h-full">
                 <div className="flex flex-col gap-6">
                   {collections.map((collection) => (
@@ -203,7 +226,7 @@ export default function Task() {
   
                 <button 
                   type="button"
-                  className="flex justify-center m-[-1rem] px-2 py-3 bg-zinc-900"
+                  className="flex justify-center m-[-1rem] p-2 bg-zinc-800"
                   onClick={() => setShowSidebar(!showSidebar)}
                 >
                   {showSidebar ? (
@@ -233,9 +256,10 @@ export default function Task() {
                 {/* COLLECTIONS */}
                 {step === 1 && (
                   <div className={`${collections.length === 0 ? "flex-col" : "flex-row"} flex gap-6`}>
-                    {collections.length <= 0 ?( 
+                    {collections.length <= 0 ?(
                       <div className="text-center">
                         <h1>Create your first collection!</h1>
+                        {ButtonCreateCollection()}
                       </div>
                     ) : (
                       <div className="grid grid-cols-5 gap-6">
@@ -255,14 +279,10 @@ export default function Task() {
                             </p>
                           </button>
                         ))}
+
+                        {ButtonCreateCollection()}
                       </div>
-                    )}
-                    
-                    
-                    <div className="flex items-center justify-center">
-                      <button type="button" onClick={() => {setModalOpen(true); setModalType('create')}}>abrir modal</button>
-                    </div>
-      
+                    )}      
                   </div>
                 )}
         
@@ -293,7 +313,7 @@ export default function Task() {
                       </button>
                     </div>
                     
-                    <button type="button" className="border-b border-dotted rounded-md px-4 py-3 flex flex-row items-center gap-4 text-sm hover:bg-zinc-100/5 group mb-8">
+                    <button type="button" className="rounded-md py-3 flex flex-row items-center gap-4 text-sm hover:bg-zinc-100/5 hover:px-4 transition-all group mb-8">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 rounded-xl bg-main text-background p-1 group-hover:scale-[1.1] transition-all w-7 h-7">
                         <title>Add a task</title>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

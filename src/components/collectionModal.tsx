@@ -15,7 +15,7 @@ import {
   ShoppingCart,
   Truck,
   WrenchScrewdriver,
-} from "@/components/svg";
+} from "@/components/icons";
 import { useUser } from "@/hooks/useUser";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import Loading from "./loading";
