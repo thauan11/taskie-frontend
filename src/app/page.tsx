@@ -1,5 +1,4 @@
 "use client"
-import { ModalCollection } from "@/components/collectionModal";
 import Loading from "@/components/loading";
 import { LogoutButton } from "@/components/logoutButton";
 import {
@@ -18,7 +17,6 @@ import {
 	LightBulb,
 	MusicalNote,
   New,
-  Pencil,
   Return,
   ShoppingBag,
   ShoppingCart,
@@ -370,15 +368,15 @@ export default function Page() {
     )
   }
 
-  // if (loading) return (
-  //   <div className="h-screen w-screen flex justify-center items-center">
-  //     <Loading height="h-10" />
-  //   </div>
-  // );
+  if (loading) return (
+    <div className="h-screen w-screen flex justify-center items-center">
+      <Loading height="h-10" />
+    </div>
+  );
   
   return (
     <main className="h-screen w-screen overflow-hidden">
-      <nav className="flex flex-row justify-end bg-zinc-800 p-2">
+      <nav className="flex flex-row justify-end bg-zinc-800/80 p-2 h-12">
         <LogoutButton />
       </nav>
       
@@ -512,9 +510,6 @@ export default function Page() {
           </div>
         </section>
       }
-
-
-
     </main>
   );
 }
