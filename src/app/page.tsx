@@ -6,7 +6,9 @@ import {
 	AcademicCap,
 	ArchiveBox,
 	Briefcase,
+	Calendar,
 	ChartPie,
+	Checked,
 	CodeSquare,
 	CreditCard,
 	Edit,
@@ -16,6 +18,8 @@ import {
 	LightBulb,
 	MusicalNote,
   New,
+  Pencil,
+  Return,
   ShoppingBag,
   ShoppingCart,
   Truck,
@@ -25,6 +29,14 @@ import { useUser } from "@/hooks/useUser";
 import { useEffect, useState } from "react";
 import { SideContent } from "@/components/sideContent";
 import { api } from "@/lib/api";
+import dayjs from "dayjs";
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrAfter);
 
 interface CollectionsData {
   name: string;
@@ -41,6 +53,18 @@ interface SelectedCollection {
   userId: string;
 }
 
+interface TaskData {
+  id: number;
+  title: string;
+  description: string;
+  createdAt: Date;
+  endAt: "";
+  completed: boolean;
+  deleted: boolean;
+  collectionId: number;
+  userId: string;
+}
+
 export default function Page() {
   // react
   const [loading, setLoading] = useState(false);
@@ -50,13 +74,14 @@ export default function Page() {
 
   // update event
   const [collectionCreated, setCollectionCreated] = useState(Boolean);
-  const [collectionUpdate, setCollectionUpdate] = useState(false);
-  // const [taskUpdate, setTaskUpdate] = useState(false);
-  const [formType, setFormType] = useState('create');
+  const [collectionUpdate, setCollectionUpdate] = useState(Boolean);
+  const [taskCreated, setTaskCreated] = useState(Boolean);
+  const [taskUpdate, setTaskUpdate] = useState(Boolean);
 
   // data
-  const [collections, setCollections] = useState<CollectionsData[]>([]);
   const { user } = useUser();
+  const [collections, setCollections] = useState<CollectionsData[]>([]);
+  const [tasks, setTasks] = useState<TaskData[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<SelectedCollection>({
     deleted: false,
     icon: "",
@@ -65,50 +90,20 @@ export default function Page() {
     createdAt: new Date(),
     userId: "",
   });
-
-  // const renderIcon = (collection: string, size: "mini" |"sm" | "md" | "lg" | "full"   ) => {
-  //   switch (collection) {
-  //     case "AcademicCap":
-  //       return <AcademicCap size={size} />;
-  //     case "ArchiveBox":
-  //       return <ArchiveBox size={size} />;
-  //     case "Briefcase":
-  //       return <Briefcase size={size} />;
-  //     case "ChartPie":
-  //       return <ChartPie size={size} />;
-  //     case "CodeSquare":
-  //       return <CodeSquare size={size} />;
-  //     case "CreditCard":
-  //       return <CreditCard size={size} />;
-  //     case "MusicalNote":
-  //       return <MusicalNote size={size} />;
-  //     case "LightBulb":
-  //       return <LightBulb size={size} />;
-  //     case "Home":
-  //       return <Home size={size} />;
-  //     case "Identification":
-  //       return <Identification size={size} />;
-  //     case "Language":
-  //       return <Language size={size} />;
-  //     case "ShoppingBag":
-  //       return <ShoppingBag size={size} />;
-  //     case "ShoppingCart":
-  //       return <ShoppingCart size={size} />;
-  //     case "Truck":
-  //       return <Truck size={size} />;
-  //     case "WrenchScrewdriver":
-  //       return <WrenchScrewdriver size={size} />;
-  //     default:
-  //       return <AcademicCap size={size} />;
-  //   }
-  // }
-
-  // const handleCollection = (id: number) => {
-  //   setSelectedCollection({ ...selectedCollection, id: id });
-  //   fetchCollections(id);
-  //   setStep(2);
-  // };
-
+  const [formMethod, setFormMethod] = useState('create');
+  const [formType, setFormType] = useState('collection');
+  const [selectedTask, setSelectedTask] = useState<TaskData>({
+    id: 0,
+    title: "",
+    description: "",
+    createdAt: new Date(),
+    endAt: "",
+    completed: false,
+    deleted: false,
+    collectionId: 0,
+    userId: "",
+  });
+  
   // elementos
   const ButtonCreateCollection = () => {
     return (
@@ -116,7 +111,7 @@ export default function Page() {
         <button
           type="button"
           className="bg-white/10 w-12 h-12 rounded-full flex justify-center items-center hover:bg-white/20 transition"
-          onClick={() => {setSideOpen(true); setFormType('create')}}
+          onClick={() => {setSideOpen(true); setFormMethod('create'); setFormType('collection');}}
         >
           <New />
         </button>
@@ -150,6 +145,28 @@ export default function Page() {
     if (icon) return icon.html;
     return <AcademicCap size={size} />;
   }
+
+  // api
+  const handleComplete = async (taskId: number, completed: boolean) => {
+    if (!user) return console.log('No user found');
+    
+    let data = {};
+    if (completed) data = { completed: true };
+    if (!completed) data = { completed: false };
+
+    const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/tasks/${taskId}`;
+    const response = await api.fetch(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const responseData = await response.json();
+      console.error(responseData);
+    }
+
+    setTaskUpdate(!taskUpdate);
+  }
   
   useEffect(() => {
     const getAllCollections = async () => {
@@ -164,10 +181,10 @@ export default function Page() {
     
         if (!response.ok) return console.log('No collections found');
         
-        const sortedData = responseData.sort((a: any, b: any) => {
+        const sortedData = responseData.sort((a: { createdAt: string }, b: { createdAt: string }) => {
           const dateA = new Date(a.createdAt);
           const dateB = new Date(b.createdAt);
-          return dateB.getTime() - dateA.getTime();
+          return dateA.getTime() - dateB.getTime();
         });
 
         setCollections(sortedData);
@@ -208,11 +225,156 @@ export default function Page() {
     getCollectionSpecific();
   }, [user, selectedCollection.id, collectionUpdate]);
 
-  if (loading) return (
-    <div className="h-screen w-screen flex justify-center items-center">
-      <Loading height="h-10" />
-    </div>
-  );
+  useEffect(() => {
+    const getAllTasks = async () => {
+      if (step !== 2) return setLoading(false);
+      if (!user) return setLoading(false);
+      if (!selectedCollection.id) return setLoading(false);
+      
+      setLoading(true);
+  
+      try {
+        const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collections/${selectedCollection.id}/tasks`;
+        const response = await fetch(endpoint, { credentials: "include" });
+        const responseData = await response.json();
+    
+        if (!response.ok) return console.log('No tasks found');
+        
+        const sortedData = responseData.sort((a: { createdAt: string }, b: { createdAt: string }) => {
+          const dateA = new Date(a.createdAt);
+          const dateB = new Date(b.createdAt);
+          return dateA.getTime() - dateB.getTime();
+        });
+
+        setTasks(sortedData);
+      } catch (error) {
+        throw new Error(`HTTP error! ${error}`);
+      }
+      finally {
+        setLoading(false);
+        taskUpdate;
+        taskCreated;
+      }
+    };
+    getAllTasks();
+  }, [user, step, selectedCollection.id, taskUpdate, taskCreated]);
+
+  const handleTasks = () => {
+    if (!tasks) return;
+
+    const tasksCompleted = tasks.filter(task => task.completed).length;
+    const tasksAvailable = tasks.length - tasksCompleted;
+    return(
+      <div className="flex flex-col gap-2 pb-10">
+        {tasks.filter(task => !task.completed && !task.deleted).length > 0 ? (
+          <>
+            {tasksAvailable === 1 && <p><span className="font-bold">{tasksAvailable}</span> - Taskie!</p>}
+            {tasksAvailable >= 2 && <p><span className="font-bold">{tasksAvailable}</span> - Taskies!</p>}
+
+            <div className="flex flex-col gap-4">
+              {tasks
+                .filter(task => !task.completed && !task.deleted)
+                .map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex flex-row bg-zinc-800 rounded-md hover:rounded-r-none"
+                  >
+                    <div className="px-3 pb-2 pt-[0.9rem]">
+                      <button
+                        type="button"
+                        className="flex items-center rounded-md hover:bg-main transition"
+                        onClick={() => handleComplete(task.id, true)}
+                      >
+                        <span className="w-5 h-5 rounded-lg border-main border-2" />
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="py-3 pr-3 flex flex-row gap-1 w-full justify-between break-words overflow-wrap"
+                      onClick={() => {
+                        setSideOpen(true);
+                        setFormMethod('update');
+                        setFormType('task');
+                        setSelectedTask(task);
+                        }
+                      }
+                    >
+                      <p className="text-start">{task.title}</p>
+                      
+                      {task.endAt && (
+                        <div className={`
+                          ${
+                            dayjs(task.endAt).utc().isSame(dayjs(), 'day') ? 'text-main' : 
+                            dayjs(task.endAt).utc().isSame(dayjs().add(1, 'day'), 'day') ? 'text-main' :
+                            dayjs(task.endAt).utc().isBefore(dayjs(), 'day') ? 'text-rose-500' :
+                            dayjs(task.endAt).utc().isAfter(dayjs(), 'day') ? 'text-green-300' : 'text-foreground'
+                          } flex flex-row pt-[2px] gap-1 text-sm`
+                        }>
+                          <div className="size-5">
+                            <Calendar size="full" />
+                          </div>
+
+                          {/* <p>{dayjs(task.endAt).utc().format('DD/MM/YYYY')}</p> */}
+                          <p>
+                            {
+                              dayjs(task.endAt).utc().isSame(dayjs(), 'day') ? 'Today' :
+                              dayjs(task.endAt).utc().isSame(dayjs().add(1, 'day'), 'day') ? 'Tomorrow' :
+                              dayjs(task.endAt).utc().isAfter(dayjs(), 'day') && 
+                              dayjs(task.endAt).utc().isAfter(dayjs().add(1, 'week'), 'day') ? 
+                              dayjs(task.endAt).utc().format('DD/MM/YYYY') :
+                              dayjs(task.endAt).utc().format('dddd')
+                            }
+                          </p>
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                ))
+              }
+            </div>
+          </>
+        ) : (
+          <>{tasksAvailable <= 0 && <p>No tasks found</p>}</>
+        )}
+
+        {tasks.filter(task => task.completed && !task.deleted).length > 0 && (
+          <div className="truncate pr-16">
+            <p className="pt-8">Completed Taskies!</p>
+            {tasks
+              .filter(task => task.completed && !task.deleted)
+              .map((task) => (
+                <div key={task.id} className="flex flex-row gap-3">
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      className="flex items-center rounded-md"
+                      onClick={() => handleComplete(task.id, false)}
+                    >
+                      <span className="w-5 h-5 rounded-lg border-main border-2 bg-main text-background">
+                        <Checked size="full" />
+                      </span>
+                    </button>
+                  </div>
+
+                  <div className="line-through text-zinc-400">
+                    <p>{task.title}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        )}
+          
+      </div>
+    )
+  }
+
+  // if (loading) return (
+  //   <div className="h-screen w-screen flex justify-center items-center">
+  //     <Loading height="h-10" />
+  //   </div>
+  // );
   
   return (
     <main className="h-screen w-screen overflow-hidden">
@@ -223,20 +385,28 @@ export default function Page() {
       {sideOpen && 
         <div className="relative">
           <SideContent
+            // react
             sideOpen={sideOpen}
             setSideOpen={setSideOpen}
+            // metodos
+            formMethod={formMethod}
+            formType={formType}
+            // colecao
             setCollectionCreated={setCollectionCreated}
             setCollectionUpdate={setCollectionUpdate}
-            formTypeMethod={formType}
             collectionName={selectedCollection.name}
             collectionIcon={selectedCollection.icon}
             collectionId={selectedCollection.id}
+            // tarefa
+            setTaskCreated={setTaskCreated}
+            setTaskUpdate={setTaskUpdate}
+            selectedTask={selectedTask}
           />
         </div>
       }
 
       {step === 1 &&
-        <section className="h-auto flex justify-center overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin px-16 pt-16 pb-24">
+        <section className="animate-opacity h-auto flex justify-center overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin px-16 pt-16 pb-24">
           <div>
             {collections.length <= 0 ?(
               <div className="text-center">
@@ -253,7 +423,8 @@ export default function Page() {
                     className="bg-zinc-800 flex flex-col items-center w-[175px] rounded-lg"
                     onClick={() => {
                       setSelectedCollection((prev) => ({ ...prev, id: collection.id }));
-                      setStep(2)
+                      setStep(2);
+                      setTasks([]);
                     }}
                   >
                     <div className="grid place-items-center h-40 p-8">
@@ -274,14 +445,14 @@ export default function Page() {
       }
 
       {step === 2 &&
-        <section className="h-full flex flex-row">
-          <aside className="animate-sideBarOpen group/sidebar relative bg-zinc-900 transition-all h-full-nav p-4 max-w-[60px]">
-            <div className="flex flex-col gap-6">
+        <section className="animate-opacity h-full flex flex-row">
+          {/* <aside className="animate-sideBarOpen bg-zinc-900 transition-all h-full-nav">
+            <div className="flex flex-col">
               {collections.map((collection) => (
                 <button
                   type="button"
                   key={collection.id}
-                  className={`${collection.id === selectedCollection.id ? "bg-main -mx-4 -my-4 p-4 text-zinc-900" : "bg-transparent"} grid place-items-center`}
+                  className={`${collection.id === selectedCollection.id ? "bg-main text-zinc-900" : "bg-transparent"} animate-sideBarOpen py-2 px-4 grid place-items-center`}
                   onClick={() => {
                     setSelectedCollection((prev) => ({ ...prev, id: collection.id }));
                     setSideOpen(false);
@@ -291,21 +462,22 @@ export default function Page() {
                 </button>
               ))}
             </div>
-          </aside>
+          </aside> */}
 
-          <div className="animate-opacity h-full-nav w-full overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin flex justify-center px-24 pt-16 pb-8">
-            <div className="w-96 flex flex-col gap-8">
+          <div className="h-full-nav w-full overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin flex justify-center px-24 pt-16 pb-8">
+            <div className="w-[32rem] flex flex-col gap-8">
               <div className="flex flex-row justify-between w-full">
                 <div className="flex flex-row gap-4">
                   <button
                     type="button"
                     className="p-2 w-16 rounded-xl bg-zinc-700 grid place-items-center"
-                    onClick={() => {setStep(1); setSelectedCollection((prev) => ({ ...prev, id: 0 }))}}
+                    onClick={() => {
+                      setStep(1);
+                      setSelectedCollection((prev) => ({ ...prev, id: 0 }));
+                      setTasks([]);
+                    }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
-                      <title>Return</title>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                    </svg>
+                    <Return size="mini" />
                   </button>
                   
                   <h1 className="text-xl font-bold grid place-items-center">{selectedCollection.name}</h1>
@@ -313,7 +485,7 @@ export default function Page() {
   
                 <button
                   type="button"
-                  onClick={() => {setSideOpen(true); setFormType('update')}}
+                  onClick={() => {setSideOpen(true); setFormMethod('update'); setFormType('collection');}}
                 >
                   <Edit />
                 </button>
@@ -323,12 +495,17 @@ export default function Page() {
                 <button
                   type="button"
                   className="flex flex-row gap-2 items-center hover:bg-zinc-700/50 w-full p-2 rounded-md"
+                  onClick={() => {setSideOpen(true); setFormMethod('create'); setFormType('task');}}
                 >
-                  <div className="p-2 rounded-xl bg-main text-background flex items-center">
+                  <div className="p-1 rounded-xl bg-main text-background flex items-center">
                     <New size="mini" />
                   </div>
-                  <span>Add new task</span>
+                  <p>New task</p>
                 </button>
+              </div>
+
+              <div>
+                {handleTasks()}
               </div>
             </div>
 
@@ -339,173 +516,5 @@ export default function Page() {
 
 
     </main>
-
-
-
-    // <>
-
-    //   <main className="h-screen w-screen overflow-hidden">
-    //     <nav className="flex flex-row justify-end bg-zinc-800 p-2">
-    //       <LogoutButton />
-    //     </nav>
-        
-    //     {sideOpen && 
-    //       <div className="relative">
-    //         <SideContent
-    //           sideOpen={sideOpen}
-    //           setSideOpen={setSideOpen}
-    //           setCollectionCreated={setCollectionCreated}
-    //           formTypeMethod={modalType}
-    //         />
-    //       </div>
-    //     }
-  
-    //     <div className="flex flex-row">
-    //       {/* <aside className={`${step !== 1 ? "animate-open" : "animate-close"} relative bg-zinc-800 w-[60px] h-full-nav p-4`}> */}
-    //       {step !== 1 &&(
-    //         <aside className={`${step !== 1 && "animate-open"} group/sidebar relative bg-zinc-900 transition-all h-full-nav p-4 ${showSidebar ? "max-w-[100%]":"max-w-[60px]"}`}>
-    //           <div className="flex flex-col justify-between h-full">
-    //             <div className="flex flex-col gap-6">
-    //               {collections.map((collection) => (
-    //                 <button
-    //                   type="button"
-    //                   key={collection.id}
-    //                   className="bg-transparent flex flex-row items-center gap-2"
-    //                   onClick={() => handleCollection(collection.id)}
-    //                 >
-    //                   <div>
-    //                     {renderIcon(collection.icon, "sm")}
-    //                   </div>
-  
-    //                   <p className={`${showSidebar && "opacity-100"} opacity-0 transition-opacity overflow-hidden text-ellipsis whitespace-nowrap`}>
-    //                     {collection.name}
-    //                   </p>
-    //                 </button>
-    //               ))}
-    //             </div>
-  
-    //             <button 
-    //               type="button"
-    //               className="flex justify-center m-[-1rem] p-2 bg-zinc-800"
-    //               onClick={() => setShowSidebar(!showSidebar)}
-    //             >
-    //               {showSidebar ? (
-    //                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-    //                   <title>Hide collection</title>
-    //                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-    //                 </svg>
-    //               ) : (
-    //                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
-    //                   <title>Show collection</title>
-    //                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-    //                 </svg>
-    //               )}
-    //             </button>
-  
-    //           </div>
-    //         </aside>
-    //       )}
-  
-    //       <section className="w-full flex flex-col items-center py-10 px-20 h-full-nav overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-500 scrollbar-track-background">
-    //         {loading ? (
-    //           <div className="flex justify-center w-full h-full">
-    //             <Loading height="h-8" />
-    //           </div>
-    //         ) : (
-    //           <>
-    //             {/* COLLECTIONS */}
-    //             {step === 1 && (
-    //               <div className={`${collections.length === 0 ? "flex-col" : "flex-row"} flex gap-6`}>
-    //                 {collections.length <= 0 ?(
-    //                   <div className="text-center">
-    //                     <h1>Create your first collection!</h1>
-    //                     {ButtonCreateCollection()}
-    //                   </div>
-    //                 ) : (
-    //                   <div className="grid grid-cols-5 gap-6">
-    //                     {collections.map((collection) => (
-    //                       <button
-    //                         type="button"
-    //                         key={collection.id}
-    //                         className="bg-zinc-800 flex flex-col items-center w-[175px] rounded-lg"
-    //                         onClick={() => handleCollection(collection.id)}
-    //                       >
-    //                         <div className="grid place-items-center h-40 p-8">
-    //                           {renderIcon(collection.icon, "full")}
-    //                         </div>
-      
-    //                         <p className="px-4 py-2">
-    //                           {collection.name}
-    //                         </p>
-    //                       </button>
-    //                     ))}
-
-    //                     {ButtonCreateCollection()}
-    //                   </div>
-    //                 )}      
-    //               </div>
-    //             )}
-        
-    //             {/* TASKS */}
-    //             {step === 2 && (
-    //               <section className="w-1/2 flex flex-col gap-4">
-    //                 <div className="flex flex-row justify-between w-full pb-8">
-    //                   <div className="flex flex-row gap-4">
-    //                     <button
-    //                       type="button"
-    //                       className="p-2 rounded-xl bg-zinc-700 grid place-items-center"
-    //                       onClick={() => {setStep(1); setShowSidebar(false)}}
-    //                     >
-    //                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
-    //                         <title>Return</title>
-    //                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-    //                       </svg>
-    //                     </button>
-                        
-    //                     <h1 className="text-xl font-bold grid place-items-center">{selectedCollection.name}</h1>
-    //                   </div>
-  
-    //                   <button type="button" onClick={() => {setModalOpen(true); setModalType('update')}}>
-    //                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-    //                       <title>Edit collection</title>
-    //                       <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-    //                     </svg>
-    //                   </button>
-    //                 </div>
-                    
-    //                 <button type="button" className="rounded-md py-3 flex flex-row items-center gap-4 text-sm hover:bg-zinc-100/5 hover:px-4 transition-all group mb-8">
-    //                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6 rounded-xl bg-main text-background p-1 group-hover:scale-[1.1] transition-all w-7 h-7">
-    //                     <title>Add a task</title>
-    //                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    //                   </svg>
-  
-    //                   {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="size-6 rounded-xl bg-main text-background p-1 group-hover:scale-105 transition-all">
-    //                     <title>Add a task</title>
-    //                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-    //                   </svg> */}
-  
-    //                   <p>Add a task</p>
-    //                 </button>
-  
-    //                 <div>
-    //                   <h1>Value - Taskies</h1>
-    //                 </div>
-
-    //                 {taskUpdate ? (
-    //                   <p>Updated task</p>
-    //                 ) : (
-    //                   <p>...</p>
-    //                 )}
-                    
-    //               </section>
-    //             )}
-    //           </>
-    //         )}
-    //       </section>
-  
-    //     </div>
-        
-    //   </main>
-    // </>
   );
 }

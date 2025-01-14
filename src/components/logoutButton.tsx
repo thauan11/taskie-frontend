@@ -39,8 +39,8 @@ export function LogoutButton() {
 				/>
 			)}
 
-			<button
-				type="button"
+			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+			<div
 				className="relative flex justify-center min-h-8 text-sm"
 				onClick={() => setShowLogout(true)}
 			>
@@ -80,7 +80,7 @@ export function LogoutButton() {
 						</button>
 					</div>
 				)}
-			</button>
+			</div>
 		</>
 	);
 }
