@@ -73,6 +73,7 @@ export default function Page() {
   // update event
   const [collectionCreated, setCollectionCreated] = useState(Boolean);
   const [collectionUpdate, setCollectionUpdate] = useState(Boolean);
+  const [collectionDeleted, setCollectionDeleted] = useState(Number);
   const [taskCreated, setTaskCreated] = useState(Boolean);
   const [taskUpdate, setTaskUpdate] = useState(Boolean);
 
@@ -177,7 +178,7 @@ export default function Page() {
         const response = await fetch(endpoint, { credentials: "include" });
         const responseData = await response.json();
     
-        if (!response.ok) return console.log('No collections found');
+        if (!response.ok) throw new Error(`Error: ${responseData}`);
         
         const sortedData = responseData.sort((a: { createdAt: string }, b: { createdAt: string }) => {
           const dateA = new Date(a.createdAt);
@@ -187,7 +188,7 @@ export default function Page() {
 
         setCollections(sortedData);
       } catch (error) {
-        throw new Error(`HTTP error! ${error}`);
+        console.log('No collections found');
       }
       finally {
         setLoading(false);
@@ -257,13 +258,19 @@ export default function Page() {
     getAllTasks();
   }, [user, step, selectedCollection.id, taskUpdate, taskCreated]);
 
+  useEffect(() => {
+    setCollections(prev => prev.filter(collection => collection.id !== collectionDeleted));
+    setCollectionUpdate(prev => !prev);
+    setStep(1);
+  }, [collectionDeleted]);
+
   const handleTasks = () => {
     if (!tasks) return;
-
     const tasksCompleted = tasks.filter(task => task.completed).length;
     const tasksAvailable = tasks.length - tasksCompleted;
+
     return(
-      <div className="flex flex-col gap-2 pb-10">
+      <div className="flex flex-col gap-2 pb-10 h-full">
         {tasks.filter(task => !task.completed && !task.deleted).length > 0 ? (
           <>
             {tasksAvailable === 1 && <p><span className="font-bold">{tasksAvailable}</span> - Taskie!</p>}
@@ -333,7 +340,9 @@ export default function Page() {
             </div>
           </>
         ) : (
-          <>{tasksAvailable <= 0 && <p>No tasks found</p>}</>
+          <div className="h-full flex justify-center pt-8">
+            {tasksAvailable <= 0 && <p>No tasks found</p>}
+          </div>
         )}
 
         {tasks.filter(task => task.completed && !task.deleted).length > 0 && (
@@ -392,6 +401,7 @@ export default function Page() {
             // colecao
             setCollectionCreated={setCollectionCreated}
             setCollectionUpdate={setCollectionUpdate}
+            setCollectionDeleted={setCollectionDeleted}
             collectionName={selectedCollection.name}
             collectionIcon={selectedCollection.icon}
             collectionId={selectedCollection.id}
@@ -502,7 +512,7 @@ export default function Page() {
                 </button>
               </div>
 
-              <div>
+              <div className="h-full">
                 {handleTasks()}
               </div>
             </div>

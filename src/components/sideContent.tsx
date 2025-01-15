@@ -16,6 +16,7 @@ import {
   ShoppingCart,
   Truck,
   WrenchScrewdriver,
+  Delete,
 } from "@/components/icons";
 import Loading from "./loading";
 import { useUser } from "@/hooks/useUser";
@@ -38,6 +39,7 @@ interface Props {
   // eventos da coleção
   setCollectionCreated?: Dispatch<SetStateAction<boolean>>;
   setCollectionUpdate?: Dispatch<SetStateAction<boolean>>;
+  setCollectionDeleted?: Dispatch<SetStateAction<number>>;
   // eventos da task
   setTaskCreated?: Dispatch<SetStateAction<boolean>>;
   setTaskUpdate?: Dispatch<SetStateAction<boolean>>;
@@ -73,6 +75,7 @@ export function SideContent({
   collectionId,
   setCollectionCreated,
   setCollectionUpdate,
+  setCollectionDeleted,
   setTaskCreated,
   setTaskUpdate,
   selectedTask,
@@ -220,7 +223,7 @@ export function SideContent({
   
       if (!response.ok) {
         const responseData = await response.json();
-        return setTimeout(() => setErrorMessage(responseData.error), 10);
+        return setErrorMessage(responseData.error);
       }
   
       setCollection({
@@ -235,6 +238,39 @@ export function SideContent({
     } catch (error) {
       console.error(error);
       setErrorMessage("Failed to update collection");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const deleteCollection = async () => {
+    if (!setCollectionDeleted) return setErrorMessage("setCollectionDeleted is not defined");
+    if (!user) return setErrorMessage("User is not defined");
+    if (!collection.id) return setErrorMessage("ID is required");
+    
+    setLoading(true);
+    
+    try {
+      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collections/${collection.id}`;
+      const response = await api.fetch(endpoint, { method: 'DELETE' });
+  
+      if (!response.ok) {
+        const responseData = await response.json();
+        return setErrorMessage(responseData.error);
+      }
+  
+      setCollection({
+        name: "",
+        icon: "AcademicCap",
+        id: 0
+      });
+      
+      setCollectionDeleted(collection.id);
+      setSideOpen(false);
+  
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Failed to delete collection");
     } finally {
       setLoading(false);
     }
@@ -307,7 +343,6 @@ export function SideContent({
 
     if (!addEndDate) Object.assign(data, { endAt: "" });
     
-    console.log(data);
     setLoading(true);
 
     try {
@@ -317,6 +352,30 @@ export function SideContent({
         body: JSON.stringify(data),
       });
 
+      const responseData = await response.json();
+      if (!response.ok) return setErrorMessage(responseData.error);
+      
+      setTaskUpdate(prev => !prev);
+      setSideOpen(false);
+
+    } catch (error) {
+      throw new Error(`Error: ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const deleteTask = async () => {
+    if (!selectedTask) return setErrorMessage("selectedTask is not defined");
+    if (!task) return setErrorMessage("task is not defined");
+    if (!setTaskUpdate) return setErrorMessage("setTaskUpdate is not defined");
+    if (!user) return setErrorMessage("user is not defined");
+
+    setLoading(true);
+
+    try {
+      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN}/users/${user.id}/collections/${task.collectionId}/tasks/${task.id}`;
+      const response = await api.fetch(endpoint, { method: 'DELETE' });
       const responseData = await response.json();
       if (!response.ok) return setErrorMessage(responseData.error);
       
@@ -411,13 +470,26 @@ export function SideContent({
               )}
             </div>
 
-            <button
-              type="submit"
-              className="flex justify-center bg-main p-1 rounded-lg text-zinc-800 disabled:bg-white hover:bg-white transition-all font-semibold text-sm"
-              disabled={loading}
-            >
-              {loading ? <Loading height="h-5" /> : <Confirm size="mini" />}
-            </button>
+            <div className="flex flex-row justify-between gap-2">
+              {formMethod === "update" && (
+                <button
+                  type="button"
+                  className="flex justify-center bg-zinc-800 p-1 rounded-lg text-foreground disabled:bg-white hover:bg-white hover:text-zinc-800 transition-all font-semibold text-sm w-1/2"
+                  onClick={() => deleteCollection()}
+                  disabled={loading}
+                >
+                  {loading ? <Loading height="h-5" /> : <Delete size="mini" />}
+                </button>
+              )}
+
+              <button
+                type="submit"
+                className={`${formMethod === "update" ? "w-1/2" : "w-full"} flex justify-center bg-main p-1 rounded-lg text-zinc-800 disabled:bg-white hover:bg-white transition-all font-semibold text-sm`}
+                disabled={loading}
+              >
+                {loading ? <Loading height="h-5" /> : <Confirm size="mini" />}
+              </button>
+            </div>
           </form>
         )}
 
@@ -474,7 +546,6 @@ export function SideContent({
                   placeholder="Task due date"
                   className="w-full p-2 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
                   value={task.endAt}
-                  // onChange={(e) => setTask({ ...task, endAt: new Date(e.target.value) })}
                   onChange={(e) => setTask({ ...task, endAt: e.target.value })}
                   disabled={loading || !addEndDate}
                 />
@@ -487,13 +558,26 @@ export function SideContent({
               )}
             </div>
 
-            <button
-              type="submit"
-              className="flex justify-center bg-main p-1 rounded-lg text-zinc-800 disabled:bg-white hover:bg-white transition-all font-semibold text-sm"
-              disabled={loading}
-            >
-              {loading ? <Loading height="h-5" /> : <Confirm size="mini" />}
-            </button>
+            <div className="flex flex-row justify-between gap-2">
+              {formMethod === "update" && (
+                <button
+                  type="button"
+                  className="flex justify-center bg-zinc-800 p-1 rounded-lg text-foreground disabled:bg-white hover:bg-white hover:text-zinc-800 transition-all font-semibold text-sm w-1/2"
+                  onClick={() => deleteTask()}
+                  disabled={loading}
+                >
+                  {loading ? <Loading height="h-5" /> : <Delete size="mini" />}
+                </button>
+              )}
+
+              <button
+                type="submit"
+                className={`${formMethod === "update" ? "w-1/2" : "w-full"} flex justify-center bg-main p-1 rounded-lg text-zinc-800 disabled:bg-white hover:bg-white transition-all font-semibold text-sm`}
+                disabled={loading}
+              >
+                {loading ? <Loading height="h-5" /> : <Confirm size="mini" />}
+              </button>
+            </div>
           </form>
         )}
         
