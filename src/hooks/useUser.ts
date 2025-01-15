@@ -1,4 +1,5 @@
 "use client"
+import { api } from '@/lib/api';
 import { useEffect, useState } from 'react';
 
 interface User {
@@ -17,24 +18,16 @@ export function useUser() {
     const fetchUserData = async () => {
       try {
         const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-in/auth-token`;
-        const response = await fetch(endpoint, {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          throw new Error('Failed to fetch user data');
-        }
+        const response = await api.fetch(endpoint);
+        const responseData = await response.json();
+        if (!response.ok) throw new Error('Failed to fetch user data');
+        setUser(responseData.user);
       } catch (error) {
         setError(error as Error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchUserData();
   }, []);
 

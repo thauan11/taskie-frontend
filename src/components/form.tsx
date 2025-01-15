@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Loading from "./loading";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 export function Form() {
   const [name, setName] = useState("");
@@ -15,12 +16,7 @@ export function Form() {
 
   const router = useRouter();
 
-  const capitalizeWords = (text: string) => {
-    return text
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
+  const firstWordCapitalize = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
   const clearInputs = () => {
     setName("");
@@ -61,13 +57,9 @@ export function Form() {
 
     try {
       const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-in`;
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await api.fetch(endpoint, {
+        method: 'POST',
         body: JSON.stringify(data),
-        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -111,20 +103,16 @@ export function Form() {
     }
 
     const data = {
-      name: capitalizeWords(name),
+      name: firstWordCapitalize(name),
       email: email.toLocaleLowerCase(),
       password,
     }
 
     try {
       const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-up`;
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await api.fetch(endpoint, {
+        method: 'POST',
         body: JSON.stringify(data),
-        credentials: 'include',
       });
 
       if (!response.ok) {

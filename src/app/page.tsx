@@ -270,13 +270,19 @@ export default function Page() {
     const tasksAvailable = tasks.length - tasksCompleted;
 
     return(
-      <div className="flex flex-col gap-2 pb-10 h-full">
-        {tasks.filter(task => !task.completed && !task.deleted).length > 0 ? (
+      <div className="flex flex-col gap-2 pb-10">
+        {tasks.length <= 0 && (
+          <div className="flex justify-center p-16">
+            <p>No tasks found</p>
+          </div>
+        )}
+
+        {tasks.filter(task => !task.completed && !task.deleted).length > 0 && (
           <>
             {tasksAvailable === 1 && <p><span className="font-bold">{tasksAvailable}</span> - Taskie!</p>}
             {tasksAvailable >= 2 && <p><span className="font-bold">{tasksAvailable}</span> - Taskies!</p>}
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 pb-8">
               {tasks
                 .filter(task => !task.completed && !task.deleted)
                 .map((task) => (
@@ -284,13 +290,13 @@ export default function Page() {
                     key={task.id}
                     className="flex flex-row bg-zinc-800 rounded-md hover:rounded-r-none"
                   >
-                    <div className="px-3 pb-2 pt-[0.9rem]">
+                    <div className="px-3 grid place-items-center">
                       <button
                         type="button"
                         className="flex items-center rounded-md hover:bg-main transition"
                         onClick={() => handleComplete(task.id, true)}
                       >
-                        <span className="w-5 h-5 rounded-lg border-main border-2" />
+                        <span className="w-6 h-6 rounded-lg border-main border-2" />
                       </button>
                     </div>
 
@@ -339,40 +345,38 @@ export default function Page() {
               }
             </div>
           </>
-        ) : (
-          <div className="h-full flex justify-center pt-8">
-            {tasksAvailable <= 0 && <p>No tasks found</p>}
-          </div>
         )}
 
         {tasks.filter(task => task.completed && !task.deleted).length > 0 && (
           <div className="truncate pr-16">
-            <p className="pt-8">Completed Taskies!</p>
-            {tasks
-              .filter(task => task.completed && !task.deleted)
-              .map((task) => (
-                <div key={task.id} className="flex flex-row gap-3">
-                  <div className="pt-1">
-                    <button
-                      type="button"
-                      className="flex items-center rounded-md"
-                      onClick={() => handleComplete(task.id, false)}
-                    >
-                      <span className="w-5 h-5 rounded-lg border-main border-2 bg-main text-background">
-                        <Checked size="full" />
-                      </span>
-                    </button>
-                  </div>
+            <p>Completed Taskies!</p>
+            
+            <div className="flex flex-col gap-2 pt-3">
+              {tasks
+                .filter(task => task.completed && !task.deleted)
+                .map((task) => (
+                  <div key={task.id} className="flex flex-row gap-2">
+                    <div>
+                      <button
+                        type="button"
+                        className="flex items-center rounded-md"
+                        onClick={() => handleComplete(task.id, false)}
+                      >
+                        <p className="w-6 h-6 rounded-lg bg-main text-background p-1">
+                          <Checked size="full" />
+                        </p>
+                      </button>
+                    </div>
 
-                  <div className="line-through text-zinc-400">
-                    <p>{task.title}</p>
+                    <div className="line-through text-zinc-400">
+                      <p>{task.title}</p>
+                    </div>
                   </div>
-                </div>
-              ))
-            }
+                ))
+              }
+            </div>
           </div>
         )}
-          
       </div>
     )
   }
@@ -505,14 +509,14 @@ export default function Page() {
                   className="flex flex-row gap-2 items-center hover:bg-zinc-700/50 w-full p-2 rounded-md"
                   onClick={() => {setSideOpen(true); setFormMethod('create'); setFormType('task');}}
                 >
-                  <div className="p-1 rounded-xl bg-main text-background flex items-center">
+                  <div className="p-1 w-7 h-7 rounded-xl bg-main text-background grid place-items-center">
                     <New size="mini" />
                   </div>
                   <p>New task</p>
                 </button>
               </div>
 
-              <div className="h-full">
+              <div>
                 {handleTasks()}
               </div>
             </div>

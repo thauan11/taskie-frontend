@@ -85,7 +85,7 @@ export function SideContent({
   const [isChangeIcon, setIsChangeIcon] = useState(false);
   const [errorMessage, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [addEndDate, setAddEndDate] = useState(!!selectedTask?.endAt);
+  const [addEndDate, setAddEndDate] = formMethod !== "create" ? useState(!!selectedTask?.endAt) : useState(false);
   // data
   const [collection, setCollection] = useState<Collection>({
     name: collectionName || "",
