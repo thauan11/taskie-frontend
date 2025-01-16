@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// const rootRoute = ['/']
 const authRedirectRoutes = ['/login']
 const pathsAvailable = ['/', '/login']
 
@@ -9,10 +8,8 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('authToken')?.value
   const { pathname } = request.nextUrl
 
-  // const isRootRoute = rootRoute.includes(request.nextUrl.pathname)
-  // if (!token || isRootRoute) {
   if (!token) {
-    return pathname === '/login' 
+    return pathname === '/login'
       ? NextResponse.next()
       : NextResponse.redirect(new URL('/login', request.url))
   }
@@ -32,11 +29,13 @@ export async function middleware(request: NextRequest) {
         'Content-Type': 'application/json',
         'Cookie': `authToken=${token}`
       }
-    })
+    });
 
     if (!response.ok) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
+
+    const userData = await response.json();
 
     if (authRedirectRoutes.includes(pathname)) {
       return NextResponse.redirect(new URL('/', request.url))

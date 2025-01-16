@@ -6,7 +6,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  portrait: string;
+  roleName: string;
 }
 
 export function useUser() {
@@ -19,17 +19,24 @@ export function useUser() {
       try {
         const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-in/auth-token`;
         const response = await api.fetch(endpoint);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        
         const responseData = await response.json();
-        if (!response.ok) throw new Error('Failed to fetch user data');
         setUser(responseData.user);
+
       } catch (error) {
         setError(error as Error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
+
     fetchUserData();
   }, []);
-
+  
   return { user, loading, error };
 }

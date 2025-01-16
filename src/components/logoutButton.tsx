@@ -152,8 +152,8 @@ export function LogoutButton() {
 					
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-700 p-4 rounded">
 						<div className="w-48 flex flex-col gap-4">
-							<div className="group w-full h-48 rounded-full overflow-hidden relative">
-								<div className="w-full h-full rounded-full bg-foreground">
+							<div className={`${userImage && 'border-2'} group w-full h-48 rounded-full overflow-hidden relative`}>
+								<div className="w-full h-full bg-foreground">
 									{userImage ? (
 										<Image
 											src={userImage}
@@ -168,7 +168,7 @@ export function LogoutButton() {
 									)}
 								</div>
 
-								<div className="hidden group-hover:grid bg-black/50 text-foreground absolute left-1/2 top-[50.1%] -translate-x-1/2 -translate-y-1/2 h-full w-full place-items-center">
+								<div className="hidden group-hover:grid bg-black/50 text-foreground absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 h-full w-full place-items-center">
 									<input
 										type="file"
 										name="avatar"
@@ -184,7 +184,7 @@ export function LogoutButton() {
 
 							<button
 								type="button"
-								className="absolute right-4 top-40 w-8 h-8 rounded-full place-items-center bg-zinc-800 p-1 text-foreground disabled:bg-white hover:bg-white hover:text-zinc-800 transition"
+								className="absolute right-4 top-40 w-8 h-8 rounded-full place-items-center bg-zinc-800 p-2 text-foreground disabled:bg-white hover:bg-white hover:text-zinc-800 transition"
 								onClick={() => deletePortrait()}
 							>
 								<Delete size="full" />
