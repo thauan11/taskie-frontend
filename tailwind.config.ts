@@ -33,6 +33,10 @@ export default {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' }
         },
+        opacityClose: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' }
+        },
         sideContentOpen: {
           '0%': { transform: 'translateX(100%)', opacity: '0.5' },
           '50%': { transform: 'translateX(50%)', opacity: '1' },
@@ -65,7 +69,8 @@ export default {
       animation: {
         loading: 'loading 1s infinite linear',
         shake: 'shake 1s',
-        opacity: 'opacity 500ms linear',
+        opacity: 'opacity 500ms linear forwards',
+        opacityClose: 'opacityClose 250ms linear forwards',
         sideContentOpen: 'sideContentOpen 500ms linear forwards',
         sideContentClose: 'sideContentClose 500ms linear forwards',
         changeIconOpen: 'changeIconOpen 500ms linear forwards',

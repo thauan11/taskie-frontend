@@ -422,7 +422,7 @@ export function SideContent({
       <button
         type="button"
         onClick={() => closeSide()}
-        className="absolute z-0 left-0 top-0 w-full h-full cursor-default"
+        className="absolute z-[79] left-0 top-0 w-full h-full cursor-default"
       />
 
       <div className={`${isOpen ? "animate-sideContentOpen" : "animate-sideContentClose"} w-80 h-full-nav relative z-10 bg-zinc-900 p-6  overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin`}>
