@@ -125,17 +125,19 @@ export function LogoutButton() {
 				className="rounded-full overflow-hidden grid place-items-center"
 				onClick={() => setShowMenu(true)}
 			>
-				<div className="w-8 h-8 rounded-full bg-foreground">
+				<div className="w-8 h-8 rounded-full">
 					{userImage ? (
-						<Image
-							src={userImage}
-							alt={`${user?.name}'s portrait`}
-							className="w-full h-full object-cover"
-							width={0}
-							height={0}
-						/>
+						<div className="w-full h-full bg-foreground">
+							<Image
+								src={userImage}
+								alt={`${user?.name}'s portrait`}
+								className="w-full h-full object-cover"
+								width={0}
+								height={0}
+							/>
+						</div>
 					) : (
-						<div className="stroke-zinc-700 text-zinc-700 p-1">
+						<div className="scale-110">
 							<Portrait size="full" />
 						</div>
 					)}
@@ -153,16 +155,18 @@ export function LogoutButton() {
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-700 p-4 rounded">
 						<div className="w-48 flex flex-col gap-4">
 							<div className={`${userImage && 'border-2'} group w-full h-48 rounded-full overflow-hidden relative`}>
-								<div className="w-full h-full bg-foreground">
+								<div className="">
 									{userImage ? (
-										<Image
-											src={userImage}
-											alt={`${user?.name}'s portrait`}
-											fill
-											className="object-cover"
-										/>
+										<div className="w-full h-full bg-foreground">
+											<Image
+												src={userImage}
+												alt={`${user?.name}'s portrait`}
+												fill
+												className="object-cover"
+											/>
+										</div>
 									) : (
-										<div className="stroke-zinc-700 text-zinc-700 p-8">
+										<div className="scale-125">
 											<Portrait size="full" />
 										</div>
 									)}
@@ -182,13 +186,15 @@ export function LogoutButton() {
 							</div>
 							
 
-							<button
-								type="button"
-								className="absolute right-4 top-40 w-8 h-8 rounded-full place-items-center bg-zinc-800 p-2 text-foreground disabled:bg-white hover:bg-white hover:text-zinc-800 transition"
-								onClick={() => deletePortrait()}
-							>
-								<Delete size="full" />
-							</button>
+							{userImage && (
+								<button
+									type="button"
+									className="absolute right-4 top-40 w-8 h-8 rounded-full place-items-center bg-zinc-800 p-2 text-foreground disabled:bg-white hover:bg-white hover:text-zinc-800 transition"
+									onClick={() => deletePortrait()}
+								>
+									<Delete size="full" />
+								</button>
+							)}
 
 							<div className="flex flex-col gap-4">
 								<div className="text-center">
