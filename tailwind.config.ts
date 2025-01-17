@@ -13,10 +13,6 @@ export default {
         foreground: "var(--foreground)",
         main: "var(--main-color)",
       },
-      boxShadow: {
-        login: 'rgba(0, 0, 0, 0.1) 0px 0px 28px',
-        loginLight: 'rgba(255, 255, 255, 0.1) 0px 0px 28px',
-      },
       keyframes: {
         loading: {
           '0%': { backgroundPosition: '0 25%,100% 25%,0 75%,100% 75%' },
@@ -37,18 +33,6 @@ export default {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' }
         },
-        // opacityClose: {
-        //   '0%': { opacity: '1' },
-        //   '100%': { opacity: '0' }
-        // },
-        // popUpOpen: {
-        //   '0%': { opacity: '0', transform: 'scale(0.5) translate(-50%,-50%)' },
-        //   '100%': { opacity: '1', transform: 'scale(1) translate(-50%,-50%)' }
-        // },
-        // popUpClose: {
-        //   '0%': { opacity: '1', transform: 'scale(1) translate(-50%,-50%)' },
-        //   '100%': { opacity: '0', transform: 'scale(0.5) translate(-50%,-50%)' }
-        // },
         sideContentOpen: {
           '0%': { transform: 'translateX(100%)', opacity: '0.5' },
           '50%': { transform: 'translateX(50%)', opacity: '1' },
@@ -81,12 +65,7 @@ export default {
       animation: {
         loading: 'loading 1s infinite linear',
         shake: 'shake 1s',
-        // open: 'open 1s forwards',
-        // close: 'close 1s forwards',
         opacity: 'opacity 500ms linear',
-        // opacityClose: 'opacityClose 0.5s forwards',
-        // popUpOpen: 'popUpOpen 0.5s forwards',
-        // popUpClose: 'popUpClose 0.5s forwards',
         sideContentOpen: 'sideContentOpen 500ms linear forwards',
         sideContentClose: 'sideContentClose 500ms linear forwards',
         changeIconOpen: 'changeIconOpen 500ms linear forwards',
