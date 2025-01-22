@@ -422,7 +422,7 @@ export function SideContent({
       <button
         type="button"
         onClick={() => closeSide()}
-        className="absolute z-[79] left-0 top-0 w-full h-full cursor-default"
+        className="absolute z-[9] left-0 top-0 w-full h-full cursor-default"
       />
 
       <div className={`${isOpen ? "animate-sideContentOpen" : "animate-sideContentClose"} w-80 h-full-nav relative z-10 bg-zinc-900 p-6  overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin`}>
@@ -438,7 +438,7 @@ export function SideContent({
               <div>
                 <button
                   type="button"
-                  className="bg-zinc-800 aspect-square rounded-full hover:bg-zinc-800/50"
+                  className="bg-zinc-800 aspect-square rounded-full hover:bg-white/10"
                   onClick={() => setIsChangeIcon(!isChangeIcon)}
                   disabled={loading}
                 >
@@ -455,7 +455,7 @@ export function SideContent({
               <div>
                 <input type="text"
                   placeholder="Collection name"
-                  className="py-1 px-2 border-b border-dotted border-foreground outline-none w-full bg-transparent text-center"
+                  className="w-full p-2 outline-none rounded-lg text-sm bg-white/10 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
                   value={collection.name}
                   onChange={(e) => setCollection({ ...collection, name: e.target.value })}
                   maxLength={16}
@@ -506,7 +506,7 @@ export function SideContent({
                 <input
                   type="text"
                   placeholder="Task title"
-                  className="w-full p-2 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
+                  className="w-full p-2 outline-none rounded-lg text-sm bg-white/10 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
                   value={task.title}
                   onChange={(e) => setTask({ ...task, title: e.target.value })}
                   disabled={loading}
@@ -516,7 +516,7 @@ export function SideContent({
               <div>
                 <textarea
                   placeholder="Task description"
-                  className="w-full h-full p-2 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50 resize-none scrollbar-track-transparent scrollbar-thumb-zinc-500 scrollbar-thin"
+                  className="w-full h-full p-2 outline-none rounded-lg text-sm bg-white/10 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50 resize-none scrollbar-track-transparent scrollbar-thumb-zinc-500 scrollbar-thin"
                   value={task.description}
                   rows={8}
                   onChange={(e) => setTask({ ...task, description: e.target.value })}
@@ -544,7 +544,7 @@ export function SideContent({
                   type="date"
                   id="endDate"
                   placeholder="Task due date"
-                  className="w-full p-2 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
+                  className="w-full p-2 outline-none rounded-lg text-sm bg-white/10 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
                   value={task.endAt}
                   onChange={(e) => setTask({ ...task, endAt: e.target.value })}
                   disabled={loading || !addEndDate}
