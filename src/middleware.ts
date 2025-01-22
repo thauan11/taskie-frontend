@@ -2,11 +2,16 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const authRedirectRoutes = ['/login']
-const pathsAvailable = ['/', '/login']
+const pathsAvailable = ['/', '/login', '/reset-password']
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('authToken')?.value
   const { pathname } = request.nextUrl
+
+  if (request.nextUrl.pathname.startsWith('/reset-password')) {
+    console.log('reset-password')
+    return NextResponse.next()
+  }
 
   if (!token) {
     return pathname === '/login'
@@ -21,21 +26,21 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/sing-in/auth-token`;
+    const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/auth-token`
     const response = await fetch(endpoint, {
-      method: "GET",
-      credentials: "include",
+      method: 'GET',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': `authToken=${token}`
-      }
-    });
+        Cookie: `authToken=${token}`,
+      },
+    })
 
     if (!response.ok) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    const userData = await response.json();
+    const userData = await response.json()
 
     if (authRedirectRoutes.includes(pathname)) {
       return NextResponse.redirect(new URL('/', request.url))
@@ -43,7 +48,9 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next()
   } catch (error) {
-    const redirectResponse = NextResponse.redirect(new URL('/login', request.url))
+    const redirectResponse = NextResponse.redirect(
+      new URL('/login', request.url)
+    )
     redirectResponse.cookies.delete('authToken')
     return redirectResponse
   }
