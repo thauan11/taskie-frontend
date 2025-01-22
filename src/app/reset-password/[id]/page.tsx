@@ -9,12 +9,14 @@ export default async function Page({
   if (!token) return <Loading height="h-10" />
 
   return (
-    <main>
-      <div>
-        <h1>Reset your Password</h1>
-      </div>
+    <main className="min-h-screen min-w-screen flex justify-center items-center">
+      <div className="max-w-[360px] bg-zinc-800 text-center flex flex-col gap-6 rounded-lg backdrop-blur-lg p-8">
+        {/* <div>
+          <h1>Reset your Password</h1>
+        </div> */}
 
-      <FormResetPassword token={token} />
+        <FormResetPassword token={token} />
+      </div>
     </main>
   )
 }
