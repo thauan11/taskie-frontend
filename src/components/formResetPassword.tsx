@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { Confirm } from './icons'
+import Loading from './loading'
 
 interface Props {
   token: string
@@ -11,6 +12,7 @@ interface Props {
 export function FormResetPassword({ token }: Props) {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setError] = useState('')
+  const [successMessage, setSuccess] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   // data
   const [password, setPassword] = useState('')
@@ -19,52 +21,79 @@ export function FormResetPassword({ token }: Props) {
   const router = useRouter()
 
   const setErrorMessage = (message: string) => {
-    setLoading(false)
     setError('')
     setTimeout(() => setError(message), 1)
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  const setSuccessMessage = (message: string) => {
+    setSuccess('')
+    setTimeout(() => setSuccess(message), 1)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (password === '') {
+      return setErrorMessage('Insert new password');
+    }
+
+    if (passwordConfirm === '') {
+      return setErrorMessage('Confirm new password');
+    }
 
     if (password !== passwordConfirm) {
-      return setErrorMessage('Passwords do not match')
+      return setErrorMessage('Passwords do not match');
     }
 
-    if (!password) {
-      return setErrorMessage('Please enter your new password')
-    }
-
-    if (!passwordConfirm) {
-      return setErrorMessage('Please confirm your new password')
-    }
-
-    setLoading(true)
+    setLoading(true);
 
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/reset-password`
+      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/reset-password/${token}`
       const response = await api.fetch(endpoint, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Cookie: `token=${token}`,
-        },
         body: JSON.stringify({ password }),
-      })
+      });
 
-      const responseData = await response.json()
       if (!response.ok) {
-        console.error('Login error:', responseData.error)
-        return setErrorMessage(responseData.error)
+        const { error } = await response.json();
+        if (error.startsWith('Token has expired')) {
+          setErrorMessage('Password change time has expired. You will be redirected to login page in 4s');
+          setTimeout(() => setError('Password change time has expired. You will be redirected to login page in 3s'), 1000);
+          setTimeout(() => setError('Password change time has expired. You will be redirected to login page in 2s'), 2000);
+          setTimeout(() => setError('Password change time has expired. You will be redirected to login page in 1s'), 3000);
+          return setTimeout(() => router.push('/login'), 4000);
+        }
       }
 
-      router.push('/')
+      setErrorMessage('');
+      setSuccessMessage('Password updated successfully. You will be redirected to login page in 4s');
+      setTimeout(() => setSuccess('Password updated successfully. You will be redirected to login page in 3s'), 1000);
+      setTimeout(() => setSuccess('Password updated successfully. You will be redirected to login page in 2s'), 2000);
+      setTimeout(() => setSuccess('Password updated successfully. You will be redirected to login page in 1s'), 3000);
+      setTimeout(() => router.push('/'), 4000);
     } catch (error) {
-      throw new Error(`Error: ${error}`)
-    } finally {
-      setLoading(false)
+      setLoading(false);
+      throw new Error(error as string);
     }
-  }
+  };
+
+  useEffect(() => {
+    const validateToken = async () => {
+      setLoading(true);
+      try {
+        const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/reset-password-validation/${token}`
+        const response = await api.fetch(endpoint);
+
+        if (!response.ok) return router.push('/login')
+
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        throw new Error(error as string);
+      }
+    }
+    validateToken()
+  }, [token, router.push])
 
   return (
     <form className="flex flex-col gap-3">
@@ -198,13 +227,57 @@ export function FormResetPassword({ token }: Props) {
         </button>
       </div>
 
+      {errorMessage && (
+        <div className="flex flex-row justify-center gap-1 text-red-500 fill-red-500 text-xs my-1 animate-shake">
+          <div className="relative pl-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-5 absolute left-0 top-0"
+            >
+              <title>Warning</title>
+              <path
+                fillRule="evenodd"
+                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                clipRule="evenodd"
+              />
+            </svg>
+
+            <p className="pt-[0.15rem]">{errorMessage}</p>
+          </div>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="flex flex-row justify-center gap-1 text-green-500 fill-green-500 text-xs my-1 animate-shake">
+          <div className="relative pl-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-5 absolute left-0 top-0"
+            >
+              <title>Warning</title>
+              <path
+                fillRule="evenodd"
+                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                clipRule="evenodd"
+              />
+            </svg>
+
+            <p className="pt-[0.15rem]">{successMessage}</p>
+          </div>
+        </div>
+      )}
+
       <button
         type="submit"
-        className="mt-4 py-1 rounded-lg bg-main text-zinc-800 hover:bg-white hover:text-zinc-800 transition-all text-sm disabled:bg-white grid place-items-center"
+        className="mt-4 py-1 rounded-lg bg-main text-zinc-800 hover:bg-white hover:text-zinc-800 transition-all font-semibold text-sm disabled:bg-white grid place-items-center"
         disabled={loading}
         onClick={handleSubmit}
       >
-        <Confirm size='mini' />
+        {loading ? <Loading height="h-5" /> : <Confirm size='mini' />}
       </button>
     </form>
   )

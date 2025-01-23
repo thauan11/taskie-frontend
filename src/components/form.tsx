@@ -13,11 +13,12 @@ export function Form() {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [isRegister, setIsRegister] = useState(false)
+  const [isResetPassword, setIsResetPassword] = useState(false)
+  const [successMessage, setSuccess] = useState('')
 
   const router = useRouter()
 
-  const firstWordCapitalize = (text: string) =>
-    `${text.charAt(0).toUpperCase()}${text.slice(1)}`
+  const firstWordCapitalize = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`
 
   const clearInputs = () => {
     setName('')
@@ -35,13 +36,49 @@ export function Form() {
   const toggleRegister = () => {
     setIsRegister(!isRegister)
     clearInputs()
-    setTimeout(() => {
-      if (isRegister) {
-        focusInput('email')
-      } else {
-        focusInput('name')
-      }
-    }, 100)
+    setTimeout(() => isRegister ? focusInput('email') : focusInput('name'), 100)
+  }
+
+  const toggleResetPassword = () => {
+    setIsResetPassword(!isResetPassword)
+    clearInputs()
+    setTimeout(() => focusInput('email'), 100)
+  }
+
+  const setSuccessMessage = (message: string) => {
+    setSuccess('')
+    setTimeout(() => setSuccess(message), 1)
+  }
+
+  const handleResetPassword = async () => {
+    if (email === '') {
+      setErrorMessage('Please enter your email')
+      return setIsLoading(false)
+    }
+
+    const data = {
+      email: email.toLocaleLowerCase()
+    }
+
+    try {
+      const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/forgot-password`
+      const response = await api.fetch(endpoint, {
+        method: 'POST',
+        body: JSON.stringify( data ),
+      })
+
+      const responseData = await response.json();
+      if (!response.ok) return setErrorMessage(responseData.error);
+
+      setSuccessMessage('Check your email for instructions on how to reset your password.');
+      setTimeout(() => setSuccessMessage(''), 4000);
+      toggleResetPassword()
+    } catch (error) {
+      console.error(error)
+      setErrorMessage('An error occurred. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleLogin = async () => {
@@ -139,6 +176,8 @@ export function Form() {
 
     if (isRegister) {
       handleRegister()
+    } else if (isResetPassword) {
+      handleResetPassword()
     } else {
       handleLogin()
     }
@@ -146,7 +185,7 @@ export function Form() {
 
   return (
     <form className="flex flex-col gap-3">
-      {isRegister && (
+      {isRegister && !isResetPassword && (
         <div className="relative">
           <input
             type="text"
@@ -206,70 +245,72 @@ export function Form() {
         </div>
       </div>
 
-      <div className="relative">
-        <input
-          type={showPassword ? 'text' : 'password'}
-          id="password"
-          name="password"
-          placeholder="Password"
-          className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          disabled={isLoading}
-        />
+      {!isResetPassword && (
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            id="password"
+            name="password"
+            placeholder="Password"
+            className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            disabled={isLoading}
+          />
 
-        <div className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center flex-row gap-2 opacity-55">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-5"
-          >
-            <title>Password</title>
-            <path
-              fillRule="evenodd"
-              d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-
-        <button
-          type="button"
-          className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center flex-row gap-2 opacity-55"
-          onClick={() => setShowPassword(!showPassword)}
-          disabled={isLoading}
-        >
-          {showPassword ? (
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center flex-row gap-2 opacity-55">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="size-4"
+              className="size-5"
             >
-              <title>Hide password</title>
-              <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
-              <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
-              <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="size-4"
-            >
-              <title>View password</title>
-              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+              <title>Password</title>
               <path
                 fillRule="evenodd"
-                d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
                 clipRule="evenodd"
               />
             </svg>
-          )}
-        </button>
-      </div>
+          </div>
+
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center flex-row gap-2 opacity-55"
+            onClick={() => setShowPassword(!showPassword)}
+            disabled={isLoading}
+          >
+            {showPassword ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="size-4"
+              >
+                <title>Hide password</title>
+                <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
+                <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
+                <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="size-4"
+              >
+                <title>View password</title>
+                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                <path
+                  fillRule="evenodd"
+                  d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
+          </button>
+        </div>
+      )}
 
       {errorMessage && (
         <div className="flex flex-row justify-center gap-1 text-red-500 fill-red-500 text-xs my-1 animate-shake">
@@ -293,36 +334,47 @@ export function Form() {
         </div>
       )}
 
-      <div className="flex justify-between items-center pt-1">
-        {/* {!isRegister &&  */}
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="remember"
-            name="remember"
-            className="appearance-none w-4 h-4 rounded bg-white bg-opacity-20 cursor-pointer checked:bg-main transition-all"
-            checked={rememberMe}
-            onChange={e => setRememberMe(e.target.checked)}
-            disabled={isLoading}
-          />
+      {successMessage && (
+        <div className="flex flex-row justify-center gap-1 text-green-500 fill-green-500 text-xs my-1 animate-shake">
+          <div className="relative pl-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-5 absolute left-0 top-0"
+            >
+              <title>Warning</title>
+              <path
+                fillRule="evenodd"
+                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                clipRule="evenodd"
+              />
+            </svg>
 
-          <label htmlFor="remember" className="text-xs cursor-pointer">
-            Remember me (30d)
-          </label>
+            <p className="pt-[0.15rem]">{successMessage}</p>
+          </div>
         </div>
-        {/* } */}
+      )}
 
-        {/* { !isRegister &&
-          <button
-            type="button"
-            className="text-xs hover:underline"
-            onClick={() => {alert("TODO")}}
-          >
-            {/* { isRegister ? "Return to sign in" : "New to Takies?" }
-            Forgot password?
-          </button>
-        } */}
-      </div>
+      {!isResetPassword && (
+        <div className="flex justify-between items-center pt-1">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="remember"
+              name="remember"
+              className="appearance-none w-4 h-4 rounded bg-white bg-opacity-20 cursor-pointer checked:bg-main transition-all"
+              checked={rememberMe}
+              onChange={e => setRememberMe(e.target.checked)}
+              disabled={isLoading}
+            />
+
+            <label htmlFor="remember" className="text-xs cursor-pointer">
+              Remember me (30d)
+            </label>
+          </div>
+        </div>
+      )}
 
       <button
         type="submit"
@@ -334,20 +386,36 @@ export function Form() {
           <Loading height="h-5" />
         ) : isRegister ? (
           'Sign up'
-        ) : (
+        ) : isResetPassword ? (
+          'Reset'
+        ): (
           'Sign in'
         )}
       </button>
 
-      <div className="text-xs">
-        <button
-          type="button"
-          className="hover:underline"
-          onClick={toggleRegister}
-        >
-          {isRegister ? 'Return to sign in' : "Don't have an account? Sign up"}
-        </button>
-      </div>
+      {!isResetPassword && (
+        <div className="text-xs">
+          <button
+            type="button"
+            className="hover:underline"
+            onClick={toggleRegister}
+          >
+            {isRegister ? 'Return to sign in' : "Don't have an account? Sign up"}
+          </button>
+        </div>
+      )}
+
+      {!isRegister && (
+        <div className="text-xs">
+          <button
+            type="button"
+            className="hover:underline"
+            onClick={toggleResetPassword}
+          >
+            {isResetPassword ? 'Return to sign in' : "Forgot your password?"}
+          </button>
+        </div>
+      )}
     </form>
   )
 }

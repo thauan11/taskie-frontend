@@ -219,11 +219,10 @@ export function LogoutButton() {
 								)}
 							</div>
 							
-
 							{userImage && (
 								<button
 									type="button"
-									className="absolute right-4 top-40 w-8 h-8 rounded-full place-items-center bg-zinc-800 p-2 text-foreground disabled:bg-white hover:bg-white hover:text-zinc-800 transition"
+									className="absolute right-4 top-40 w-8 h-8 rounded-full place-items-center bg-zinc-800 p-2 text-foreground disabled:cursor-none hover:bg-white hover:text-zinc-800 transition"
 									onClick={() => deletePortrait()}
 									disabled={loading}
 								>
@@ -244,10 +243,8 @@ export function LogoutButton() {
 								>
 									{loading ? <Loading height="h-5" /> : "Logout"}
 								</button>
-
 							</div>
 						</div>
-
 					</div>
 				</>
 			)}
