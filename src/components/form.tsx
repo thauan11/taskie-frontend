@@ -18,7 +18,9 @@ export function Form() {
 
   const router = useRouter()
 
-  const firstWordCapitalize = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`
+  const firstWordCapitalize = (text: string) => {
+    return `${text.charAt(0).toUpperCase()}${text.slice(1)}`
+  }
 
   const clearInputs = () => {
     setName('')
@@ -36,7 +38,10 @@ export function Form() {
   const toggleRegister = () => {
     setIsRegister(!isRegister)
     clearInputs()
-    setTimeout(() => isRegister ? focusInput('email') : focusInput('name'), 100)
+    setTimeout(
+      () => (isRegister ? focusInput('email') : focusInput('name')),
+      100
+    )
   }
 
   const toggleResetPassword = () => {
@@ -57,21 +62,23 @@ export function Form() {
     }
 
     const data = {
-      email: email.toLocaleLowerCase()
+      email: email.toLocaleLowerCase(),
     }
 
     try {
       const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/forgot-password`
       const response = await api.fetch(endpoint, {
         method: 'POST',
-        body: JSON.stringify( data ),
+        body: JSON.stringify(data),
       })
 
-      const responseData = await response.json();
-      if (!response.ok) return setErrorMessage(responseData.error);
+      const responseData = await response.json()
+      if (!response.ok) return setErrorMessage(responseData.error)
 
-      setSuccessMessage('Check your email for instructions on how to reset your password.');
-      setTimeout(() => setSuccessMessage(''), 4000);
+      setSuccessMessage(
+        'Check your email for instructions on how to reset your password.'
+      )
+      setTimeout(() => setSuccessMessage(''), 4000)
       toggleResetPassword()
     } catch (error) {
       console.error(error)
@@ -82,6 +89,7 @@ export function Form() {
   }
 
   const handleLogin = async () => {
+    console.log('init login')
     if (email === '' || password === '') {
       setErrorMessage('Please enter your email and password.')
       return setIsLoading(false)
@@ -94,6 +102,7 @@ export function Form() {
     }
 
     try {
+      console.log('init api request')
       const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/login`
       const response = await api.fetch(endpoint, {
         method: 'POST',
@@ -106,7 +115,10 @@ export function Form() {
         setIsLoading(false)
       }
 
+      console.log('api request ok')
+
       router.push('/')
+      console.log('push completed')
     } catch (error) {
       console.error(error)
       setErrorMessage('An error occurred. Please try again.')
@@ -388,7 +400,7 @@ export function Form() {
           'Sign up'
         ) : isResetPassword ? (
           'Reset'
-        ): (
+        ) : (
           'Sign in'
         )}
       </button>
@@ -400,7 +412,9 @@ export function Form() {
             className="hover:underline"
             onClick={toggleRegister}
           >
-            {isRegister ? 'Return to sign in' : "Don't have an account? Sign up"}
+            {isRegister
+              ? 'Return to sign in'
+              : "Don't have an account? Sign up"}
           </button>
         </div>
       )}
@@ -412,7 +426,7 @@ export function Form() {
             className="hover:underline"
             onClick={toggleResetPassword}
           >
-            {isResetPassword ? 'Return to sign in' : "Forgot your password?"}
+            {isResetPassword ? 'Return to sign in' : 'Forgot your password?'}
           </button>
         </div>
       )}
