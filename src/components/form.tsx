@@ -117,8 +117,9 @@ export function Form() {
 
       console.log('api request ok')
 
-      // router.push('/')
-      redirect('/')
+      setTimeout(() => router.push('/'), 100)
+      // redirect('/login')
+      // router.replace('/')
       console.log('redirect completed')
     } catch (error) {
       console.error(error)
