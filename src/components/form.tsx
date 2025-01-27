@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Loading from './loading'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 
 export function Form() {
@@ -117,9 +117,8 @@ export function Form() {
 
       console.log('api request ok')
 
-      setTimeout(() => router.push('/'), 100)
-      // redirect('/login')
-      // router.replace('/')
+      // router.push('/')
+      window.location.href = '/'
       console.log('redirect completed')
     } catch (error) {
       console.error(error)
