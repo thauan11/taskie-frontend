@@ -116,9 +116,7 @@ export function Form() {
       }
 
       console.log('api request ok')
-
-      // router.push('/')
-      window.location.href = '/'
+      router.push('/')
       console.log('redirect completed')
     } catch (error) {
       console.error(error)
