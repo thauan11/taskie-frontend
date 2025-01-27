@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Loading from './loading'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 
 export function Form() {
@@ -117,8 +117,9 @@ export function Form() {
 
       console.log('api request ok')
 
-      router.push('/')
-      console.log('push completed')
+      // router.push('/')
+      redirect('/')
+      console.log('redirect completed')
     } catch (error) {
       console.error(error)
       setErrorMessage('An error occurred. Please try again.')
