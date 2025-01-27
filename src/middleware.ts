@@ -8,6 +8,12 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('authToken')?.value
   const { pathname } = request.nextUrl
 
+  console.log(`
+  init middleware
+  token: ${token}
+  path: ${pathname}
+  `)
+
   if (request.nextUrl.pathname.startsWith('/reset-password')) {
     console.log('reset-password')
     return NextResponse.next()
