@@ -89,7 +89,6 @@ export function Form() {
   }
 
   const handleLogin = async () => {
-    console.log('init login')
     if (email === '' || password === '') {
       setErrorMessage('Please enter your email and password.')
       return setIsLoading(false)
@@ -102,7 +101,6 @@ export function Form() {
     }
 
     try {
-      console.log('init api request')
       const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/login`
       const response = await api.fetch(endpoint, {
         method: 'POST',
@@ -115,10 +113,7 @@ export function Form() {
         setIsLoading(false)
       }
 
-      console.log('api request ok')
-      console.log(response)
-      // router.push('/')
-      console.log('redirect completed')
+      router.push('/')
     } catch (error) {
       console.error(error)
       setErrorMessage('An error occurred. Please try again.')
