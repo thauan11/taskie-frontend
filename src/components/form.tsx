@@ -116,7 +116,8 @@ export function Form() {
       }
 
       console.log('api request ok')
-      router.push('/')
+      console.log(response)
+      // router.push('/')
       console.log('redirect completed')
     } catch (error) {
       console.error(error)
