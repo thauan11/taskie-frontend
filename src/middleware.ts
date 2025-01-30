@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   try {
     const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/auth-token`
     const response = await fetch(endpoint, {
-      method: 'GET',
+      method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',

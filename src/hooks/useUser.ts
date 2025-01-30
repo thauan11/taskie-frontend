@@ -18,7 +18,7 @@ export function useUser() {
     const fetchUserData = async () => {
       try {
         const endpoint = `${process.env.NEXT_PUBLIC_DOMAIN as string}/auth/auth-token`
-        const response = await api.fetch(endpoint)
+        const response = await api.fetch(endpoint, { method: 'POST' })
 
         if (!response.ok) {
           throw new Error('Failed to fetch user data')
