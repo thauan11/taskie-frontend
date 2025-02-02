@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Loading from './loading'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
+import { createCookie } from '@/hooks/deleteCookie'
 
 export function Form() {
   const [name, setName] = useState('')
@@ -116,8 +117,8 @@ export function Form() {
         return
       }
       
-      console.log(responseData.token)
-      localStorage.setItem('authToken', responseData.token)
+      const token = responseData.token
+      await createCookie('authToken', token)
       router.push('/')
     } catch (error) {
       console.error(error)
