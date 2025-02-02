@@ -107,10 +107,13 @@ export function Form() {
         body: JSON.stringify(data),
       })
 
+      const responseData = await response.json()
+    
       if (!response.ok) {
-        console.error('Login error:', response.status)
-        setErrorMessage('Invalid email or password.')
+        console.error('Detalhes do erro:', responseData)
+        setErrorMessage(responseData.error || 'Erro desconhecido')
         setIsLoading(false)
+        return
       }
 
       router.push('/')
