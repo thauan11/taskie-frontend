@@ -115,7 +115,9 @@ export function Form() {
         setIsLoading(false)
         return
       }
-
+      
+      console.log(responseData.token)
+      localStorage.setItem('authToken', responseData.token)
       router.push('/')
     } catch (error) {
       console.error(error)
