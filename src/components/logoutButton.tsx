@@ -134,13 +134,13 @@ export function LogoutButton() {
 	}, [user, portraitUpdated]);
 
 	return (
-		<div className="h-full">
+		<div className="h-full grid place-items-center">
 			<button
 				type="button"
 				className="rounded-full overflow-hidden grid place-items-center"
 				onClick={() => setShowMenu(true)}
 			>
-				<div className="w-8 h-8 rounded-full">
+				<div className="w-10 h-10 md:w-8 md:h-8 rounded-full">
 					{loadingPortrait ? (
 						<div className="grid place-items-center h-full w-full">
 							<Loading height="h-5" />

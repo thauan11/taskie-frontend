@@ -388,8 +388,8 @@ export default function Page() {
   );
   
   return (
-    <main className="h-screen w-screen overflow-hidden">
-      <nav className="flex flex-row justify-end bg-zinc-800/80 p-2 h-12">
+    <main className="h-svh md:h-screen w-screen overflow-hidden">
+      <nav className="flex flex-row justify-end bg-zinc-800/80 p-2 h-16 md:h-12">
         <LogoutButton />
       </nav>
       

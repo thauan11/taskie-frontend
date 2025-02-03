@@ -418,7 +418,7 @@ export function SideContent({
   }, [isOpen, formMethod, formType]);
 
   return (
-    <main className="absolute top-0 left-0 w-screen h-screen flex flex-row justify-end">
+    <main className="absolute top-0 left-0 w-screen h-svh md:h-screen flex flex-row justify-end">
       <button
         type="button"
         onClick={() => closeSide()}

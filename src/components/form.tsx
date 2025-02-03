@@ -206,7 +206,7 @@ export function Form() {
             name="name"
             autoComplete="off"
             placeholder="Name"
-            className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
+            className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg md:text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
             value={name}
             onChange={e => setName(e.target.value)}
             disabled={isLoading}
@@ -238,7 +238,7 @@ export function Form() {
           name="email"
           autoComplete="off"
           placeholder="Email"
-          className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
+          className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg md:text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
           value={email}
           onChange={e => setEmail(e.target.value)}
           disabled={isLoading}
@@ -265,7 +265,7 @@ export function Form() {
             id="password"
             name="password"
             placeholder="Password"
-            className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
+            className="font-inter w-full h-full py-2 pl-9 pr-7 outline-none rounded-lg md:text-sm bg-white/20 focus:outline-none focus:ring-2 focus:ring-main focus:border-main disabled:opacity-50"
             value={password}
             onChange={e => setPassword(e.target.value)}
             disabled={isLoading}
