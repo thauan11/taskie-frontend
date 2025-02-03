@@ -264,6 +264,7 @@ export default function Page() {
     setStep(1);
   }, [collectionDeleted]);
 
+  // construtor
   const handleTasks = () => {
     if (!tasks) return;
     const tasksCompleted = tasks.filter(task => task.completed).length;
@@ -433,8 +434,8 @@ export default function Page() {
                   key={collection.id}
                   className="bg-zinc-800 flex flex-col items-center md:w-[175px] rounded-lg"
                   onClick={() => {
-                    setSelectedCollection((prev) => ({ ...prev, id: collection.id }));
                     setStep(2);
+                    setSelectedCollection((prev) => ({ ...prev, id: collection.id }));
                     setTasks([]);
                   }}
                 >
@@ -456,26 +457,8 @@ export default function Page() {
 
       {step === 2 &&
         <section className="animate-opacity h-full flex flex-row">
-          {/* <aside className="animate-sideBarOpen bg-zinc-900 transition-all h-full-nav">
-            <div className="flex flex-col">
-              {collections.map((collection) => (
-                <button
-                  type="button"
-                  key={collection.id}
-                  className={`${collection.id === selectedCollection.id ? "bg-main text-zinc-900" : "bg-transparent"} animate-sideBarOpen py-2 px-4 grid place-items-center`}
-                  onClick={() => {
-                    setSelectedCollection((prev) => ({ ...prev, id: collection.id }));
-                    setSideOpen(false);
-                  }}
-                >
-                  {renderIcon(collection.icon, "sm")}
-                </button>
-              ))}
-            </div>
-          </aside> */}
-
-          <div className="h-full-nav w-full overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin flex justify-center px-24 pt-16 pb-8">
-            <div className="w-[32rem] flex flex-col gap-8">
+          <div className="h-full-nav w-full overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin flex justify-center">
+            <div className="w-[32rem] flex flex-col gap-8 md:px-16 md:pt-16 pb-24 pt-8 px-8">
               <div className="flex flex-row justify-between w-full">
                 <div className="flex flex-row gap-4">
                   <button
