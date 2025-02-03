@@ -418,41 +418,39 @@ export default function Page() {
       }
 
       {step === 1 &&
-        <section className="animate-opacity h-auto flex justify-center overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin px-16 pt-16 pb-24">
-          <div>
-            {collections.length <= 0 ?(
-              <div className="text-center">
-                <h1>Create your first collection!</h1>
+        <section className="animate-opacity h-auto flex justify-center md:px-16 md:pb-24 md:pt-16 p-8">
+          {collections.length <= 0 ?(
+            <div className="text-center">
+              <h1>Create your first collection!</h1>
 
-                {ButtonCreateCollection()}
-              </div>
-            ) : (
-              <div className="grid grid-cols-5 gap-6">
-                {collections.map((collection) => (
-                  <button
-                    type="button"
-                    key={collection.id}
-                    className="bg-zinc-800 flex flex-col items-center w-[175px] rounded-lg"
-                    onClick={() => {
-                      setSelectedCollection((prev) => ({ ...prev, id: collection.id }));
-                      setStep(2);
-                      setTasks([]);
-                    }}
-                  >
-                    <div className="grid place-items-center h-40 p-8">
-                      {renderIcon(collection.icon, "full")}
-                    </div>
+              {ButtonCreateCollection()}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-5 md:gap-6 overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin">
+              {collections.map((collection) => (
+                <button
+                  type="button"
+                  key={collection.id}
+                  className="bg-zinc-800 flex flex-col items-center md:w-[175px] rounded-lg"
+                  onClick={() => {
+                    setSelectedCollection((prev) => ({ ...prev, id: collection.id }));
+                    setStep(2);
+                    setTasks([]);
+                  }}
+                >
+                  <div className="grid place-items-center h-40 p-8">
+                    {renderIcon(collection.icon, "full")}
+                  </div>
 
-                    <p className="px-4 py-2">
-                      {collection.name}
-                    </p>
-                  </button>
-                ))}
+                  <p className="px-4 py-2">
+                    {collection.name}
+                  </p>
+                </button>
+              ))}
 
-                {ButtonCreateCollection()}
-              </div>
-            )}
-          </div>
+              {ButtonCreateCollection()}
+            </div>
+          )}
         </section>
       }
 
