@@ -418,7 +418,7 @@ export default function Page() {
       }
 
       {step === 1 &&
-        <section className="animate-opacity h-auto flex justify-center md:px-16 md:pb-24 md:pt-16 p-8">
+        <section className="animate-opacity h-full flex justify-center md:px-16 md:pt-16 pb-24 pt-8 px-8">
           {collections.length <= 0 ?(
             <div className="text-center">
               <h1>Create your first collection!</h1>
@@ -426,7 +426,7 @@ export default function Page() {
               {ButtonCreateCollection()}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-5 md:gap-6 overflow-y-auto scrollbar-track-transparent scrollbar-thumb-zinc-700 scrollbar-thin">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 h-auto overflow-y-auto scrollbar-track-transparent scrollbar-thumb-transparent scrollbar-thin">
               {collections.map((collection) => (
                 <button
                   type="button"
